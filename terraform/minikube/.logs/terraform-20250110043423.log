@@ -1,4 +1,0 @@
-2025-01-10T04:34:24.008+0200 [INFO]  Terraform version: 1.10.3
-2025-01-10T04:34:24.008+0200 [INFO]  Go runtime version: go1.23.3
-2025-01-10T04:34:24.008+0200 [INFO]  CLI args: []string{"terraform", "-chdir=./config/reactory/terraform/minikube", "init"}
-2025-01-10T04:34:24.010+0200 [INFO]  CLI command args: []string{"init"}

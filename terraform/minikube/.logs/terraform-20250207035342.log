@@ -1,0 +1,846 @@
+2025-02-07T03:57:47.482+0200 [INFO]  Terraform version: 1.10.3
+2025-02-07T03:57:47.482+0200 [INFO]  Go runtime version: go1.23.3
+2025-02-07T03:57:47.482+0200 [INFO]  CLI args: []string{"terraform", "-chdir=./config/reactory/terraform/minikube", "apply"}
+2025-02-07T03:57:47.486+0200 [INFO]  CLI command args: []string{"apply"}
+2025-02-07T03:57:47.549+0200 [INFO]  backend/local: starting Apply operation
+2025-02-07T03:57:47.561+0200 [INFO]  provider: configuring client automatic mTLS
+2025-02-07T03:57:47.606+0200 [INFO]  provider.terraform-provider-kubernetes_v2.35.1_x5: configuring server automatic mTLS: timestamp="2025-02-07T03:57:47.606+0200"
+2025-02-07T03:57:47.664+0200 [INFO]  provider: plugin process exited: plugin=.terraform/providers/registry.terraform.io/hashicorp/kubernetes/2.35.1/darwin_arm64/terraform-provider-kubernetes_v2.35.1_x5 id=61975
+2025-02-07T03:57:47.673+0200 [INFO]  provider: configuring client automatic mTLS
+2025-02-07T03:57:47.702+0200 [INFO]  provider.terraform-provider-kubernetes_v2.35.1_x5: configuring server automatic mTLS: timestamp="2025-02-07T03:57:47.702+0200"
+2025-02-07T03:57:47.729+0200 [INFO]  provider: plugin process exited: plugin=.terraform/providers/registry.terraform.io/hashicorp/kubernetes/2.35.1/darwin_arm64/terraform-provider-kubernetes_v2.35.1_x5 id=61976
+2025-02-07T03:57:47.729+0200 [INFO]  backend/local: apply calling Plan
+2025-02-07T03:57:47.735+0200 [INFO]  provider: configuring client automatic mTLS
+2025-02-07T03:57:47.762+0200 [INFO]  provider.terraform-provider-kubernetes_v2.35.1_x5: configuring server automatic mTLS: timestamp="2025-02-07T03:57:47.762+0200"
+2025-02-07T03:57:47.781+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for kubernetes_namespace.reactory, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_default_service_account: planned value cty.False for a non-computed attribute
+2025-02-07T03:57:47.786+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.mongodb.kubernetes_persistent_volume_claim.mongodb_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_until_bound: planned value cty.True for a non-computed attribute
+2025-02-07T03:57:47.786+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.meilisearch.kubernetes_persistent_volume_claim.meilisearch_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_until_bound: planned value cty.True for a non-computed attribute
+2025-02-07T03:57:47.786+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.express_server.kubernetes_service.reactory_express_server, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_load_balancer: planned value cty.True for a non-computed attribute
+      - .spec[0].publish_not_ready_addresses: planned value cty.False for a non-computed attribute
+      - .spec[0].session_affinity: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].allocate_load_balancer_node_ports: planned value cty.True for a non-computed attribute
+      - .spec[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].session_affinity_config: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.787+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.prometheus.kubernetes_service.reactory_prometheus, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_load_balancer: planned value cty.True for a non-computed attribute
+      - .spec[0].allocate_load_balancer_node_ports: planned value cty.True for a non-computed attribute
+      - .spec[0].publish_not_ready_addresses: planned value cty.False for a non-computed attribute
+      - .spec[0].session_affinity: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].session_affinity_config: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+2025-02-07T03:57:47.787+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.meilisearch.kubernetes_persistent_volume.meilisearch_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].volume_mode: planned value cty.StringVal("Filesystem") for a non-computed attribute
+      - .spec[0].persistent_volume_reclaim_policy: planned value cty.StringVal("Retain") for a non-computed attribute
+      - .spec[0].claim_ref: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].node_affinity: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.787+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.express_server.kubernetes_persistent_volume.reactory_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].persistent_volume_reclaim_policy: planned value cty.StringVal("Retain") for a non-computed attribute
+      - .spec[0].volume_mode: planned value cty.StringVal("Filesystem") for a non-computed attribute
+      - .spec[0].claim_ref: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].node_affinity: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.788+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.mongodb.kubernetes_persistent_volume.mongodb_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].volume_mode: planned value cty.StringVal("Filesystem") for a non-computed attribute
+      - .spec[0].persistent_volume_reclaim_policy: planned value cty.StringVal("Retain") for a non-computed attribute
+      - .spec[0].claim_ref: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].node_affinity: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.789+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.postgres.kubernetes_persistent_volume.postgres_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].persistent_volume_reclaim_policy: planned value cty.StringVal("Retain") for a non-computed attribute
+      - .spec[0].volume_mode: planned value cty.StringVal("Filesystem") for a non-computed attribute
+      - .spec[0].claim_ref: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].node_affinity: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.789+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.express_server.kubernetes_persistent_volume_claim.reactory_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_until_bound: planned value cty.True for a non-computed attribute
+2025-02-07T03:57:47.791+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.pwa_client.kubernetes_service.reactory_nginx, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_load_balancer: planned value cty.True for a non-computed attribute
+      - .spec[0].allocate_load_balancer_node_ports: planned value cty.True for a non-computed attribute
+      - .spec[0].publish_not_ready_addresses: planned value cty.False for a non-computed attribute
+      - .spec[0].session_affinity: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].session_affinity_config: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.792+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.postgres.kubernetes_persistent_volume_claim.postgres_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_until_bound: planned value cty.True for a non-computed attribute
+2025-02-07T03:57:47.793+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.jaeger.kubernetes_service.reactory_jaeger, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_load_balancer: planned value cty.True for a non-computed attribute
+      - .spec[0].allocate_load_balancer_node_ports: planned value cty.True for a non-computed attribute
+      - .spec[0].publish_not_ready_addresses: planned value cty.False for a non-computed attribute
+      - .spec[0].session_affinity: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].port[1].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].session_affinity_config: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.793+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.redis.kubernetes_persistent_volume_claim.redis_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_until_bound: planned value cty.True for a non-computed attribute
+2025-02-07T03:57:47.793+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.redis.kubernetes_persistent_volume.redis_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].volume_mode: planned value cty.StringVal("Filesystem") for a non-computed attribute
+      - .spec[0].persistent_volume_reclaim_policy: planned value cty.StringVal("Retain") for a non-computed attribute
+      - .spec[0].claim_ref: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].node_affinity: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.793+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.grafana.kubernetes_service.reactory_grafana, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_load_balancer: planned value cty.True for a non-computed attribute
+      - .spec[0].session_affinity: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].allocate_load_balancer_node_ports: planned value cty.True for a non-computed attribute
+      - .spec[0].publish_not_ready_addresses: planned value cty.False for a non-computed attribute
+      - .spec[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].session_affinity_config: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.802+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.pwa_client.kubernetes_deployment.reactory_pwa_client, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.806+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.prometheus.kubernetes_deployment.reactory_prometheus, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.809+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.jaeger.kubernetes_deployment.reactory_jaeger, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].port[1].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.812+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.grafana.kubernetes_deployment.reactory_grafana, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[1].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[1].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.815+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.meilisearch.kubernetes_deployment.reactory_meilisearch, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].volume[0].persistent_volume_claim[0].read_only: planned value cty.False for a non-computed attribute
+2025-02-07T03:57:47.815+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.mongodb.kubernetes_deployment.reactory_mongodb, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].volume[0].persistent_volume_claim[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.816+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.postgres.kubernetes_deployment.reactory_postgres, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].volume[0].persistent_volume_claim[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+2025-02-07T03:57:47.816+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.redis.kubernetes_deployment.reactory_redis, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].volume[0].persistent_volume_claim[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.817+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.express_server.kubernetes_deployment.reactory_express_server, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[1].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[1].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].volume[0].persistent_volume_claim[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T03:57:47.819+0200 [INFO]  provider: plugin process exited: plugin=.terraform/providers/registry.terraform.io/hashicorp/kubernetes/2.35.1/darwin_arm64/terraform-provider-kubernetes_v2.35.1_x5 id=61977
+2025-02-07T04:00:09.902+0200 [INFO]  backend/local: apply calling Apply
+2025-02-07T04:00:09.931+0200 [INFO]  provider: configuring client automatic mTLS
+2025-02-07T04:00:09.971+0200 [INFO]  provider.terraform-provider-kubernetes_v2.35.1_x5: configuring server automatic mTLS: timestamp="2025-02-07T04:00:09.971+0200"
+2025-02-07T04:00:09.992+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for kubernetes_namespace.reactory, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_default_service_account: planned value cty.False for a non-computed attribute
+2025-02-07T04:00:09.992+0200 [INFO]  Starting apply for kubernetes_namespace.reactory
+2025-02-07T04:00:09.998+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.postgres.kubernetes_persistent_volume.postgres_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].persistent_volume_reclaim_policy: planned value cty.StringVal("Retain") for a non-computed attribute
+      - .spec[0].volume_mode: planned value cty.StringVal("Filesystem") for a non-computed attribute
+      - .spec[0].claim_ref: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].node_affinity: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:09.998+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.redis.kubernetes_persistent_volume.redis_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].persistent_volume_reclaim_policy: planned value cty.StringVal("Retain") for a non-computed attribute
+      - .spec[0].volume_mode: planned value cty.StringVal("Filesystem") for a non-computed attribute
+      - .spec[0].claim_ref: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].node_affinity: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:09.998+0200 [INFO]  Starting apply for module.postgres.kubernetes_persistent_volume.postgres_data
+2025-02-07T04:00:09.998+0200 [INFO]  Starting apply for module.redis.kubernetes_persistent_volume.redis_data
+2025-02-07T04:00:09.999+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.meilisearch.kubernetes_persistent_volume.meilisearch_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].persistent_volume_reclaim_policy: planned value cty.StringVal("Retain") for a non-computed attribute
+      - .spec[0].volume_mode: planned value cty.StringVal("Filesystem") for a non-computed attribute
+      - .spec[0].claim_ref: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].node_affinity: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:09.999+0200 [INFO]  Starting apply for module.meilisearch.kubernetes_persistent_volume.meilisearch_data
+2025-02-07T04:00:09.999+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.mongodb.kubernetes_persistent_volume.mongodb_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].persistent_volume_reclaim_policy: planned value cty.StringVal("Retain") for a non-computed attribute
+      - .spec[0].volume_mode: planned value cty.StringVal("Filesystem") for a non-computed attribute
+      - .spec[0].node_affinity: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].claim_ref: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:09.999+0200 [INFO]  Starting apply for module.mongodb.kubernetes_persistent_volume.mongodb_data
+2025-02-07T04:00:09.999+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.express_server.kubernetes_persistent_volume.reactory_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].volume_mode: planned value cty.StringVal("Filesystem") for a non-computed attribute
+      - .spec[0].persistent_volume_reclaim_policy: planned value cty.StringVal("Retain") for a non-computed attribute
+      - .spec[0].claim_ref: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].node_affinity: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:09.999+0200 [INFO]  Starting apply for module.express_server.kubernetes_persistent_volume.reactory_data
+2025-02-07T04:00:10.041+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for kubernetes_namespace.reactory, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.049+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.mongodb.kubernetes_persistent_volume_claim.mongodb_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_until_bound: planned value cty.True for a non-computed attribute
+2025-02-07T04:00:10.049+0200 [INFO]  Starting apply for module.mongodb.kubernetes_persistent_volume_claim.mongodb_data
+2025-02-07T04:00:10.049+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.pwa_client.kubernetes_service.reactory_nginx, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_load_balancer: planned value cty.True for a non-computed attribute
+      - .spec[0].allocate_load_balancer_node_ports: planned value cty.True for a non-computed attribute
+      - .spec[0].publish_not_ready_addresses: planned value cty.False for a non-computed attribute
+      - .spec[0].session_affinity: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].session_affinity_config: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:10.049+0200 [INFO]  Starting apply for module.pwa_client.kubernetes_service.reactory_nginx
+2025-02-07T04:00:10.049+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.jaeger.kubernetes_service.reactory_jaeger, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_load_balancer: planned value cty.True for a non-computed attribute
+      - .spec[0].publish_not_ready_addresses: planned value cty.False for a non-computed attribute
+      - .spec[0].session_affinity: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].allocate_load_balancer_node_ports: planned value cty.True for a non-computed attribute
+      - .spec[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].port[1].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].session_affinity_config: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:10.049+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.meilisearch.kubernetes_persistent_volume_claim.meilisearch_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_until_bound: planned value cty.True for a non-computed attribute
+2025-02-07T04:00:10.049+0200 [INFO]  Starting apply for module.meilisearch.kubernetes_persistent_volume_claim.meilisearch_data
+2025-02-07T04:00:10.050+0200 [INFO]  Starting apply for module.jaeger.kubernetes_service.reactory_jaeger
+2025-02-07T04:00:10.062+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.jaeger.kubernetes_deployment.reactory_jaeger, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].port[1].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:10.063+0200 [INFO]  Starting apply for module.jaeger.kubernetes_deployment.reactory_jaeger
+2025-02-07T04:00:10.068+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.pwa_client.kubernetes_service.reactory_nginx, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].load_balancer_class: was null, but now cty.StringVal("")
+      - .spec[0].external_name: was null, but now cty.StringVal("")
+      - .spec[0].load_balancer_ip: was null, but now cty.StringVal("")
+      - .spec[0].port[0].app_protocol: was null, but now cty.StringVal("")
+      - .spec[0].port[0].name: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.074+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.jaeger.kubernetes_service.reactory_jaeger, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].load_balancer_class: was null, but now cty.StringVal("")
+      - .spec[0].external_name: was null, but now cty.StringVal("")
+      - .spec[0].load_balancer_ip: was null, but now cty.StringVal("")
+      - .spec[0].port[0].app_protocol: was null, but now cty.StringVal("")
+      - .spec[0].port[1].app_protocol: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.080+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.redis.kubernetes_persistent_volume_claim.redis_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_until_bound: planned value cty.True for a non-computed attribute
+2025-02-07T04:00:10.080+0200 [INFO]  Starting apply for module.redis.kubernetes_persistent_volume_claim.redis_data
+2025-02-07T04:00:10.088+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.grafana.kubernetes_deployment.reactory_grafana, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[1].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[1].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:10.089+0200 [INFO]  Starting apply for module.grafana.kubernetes_deployment.reactory_grafana
+2025-02-07T04:00:10.241+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.express_server.kubernetes_persistent_volume.reactory_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].storage_class_name: was null, but now cty.StringVal("")
+      - .spec[0].persistent_volume_source[0].host_path[0].type: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.244+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.postgres.kubernetes_persistent_volume.postgres_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].storage_class_name: was null, but now cty.StringVal("")
+      - .spec[0].persistent_volume_source[0].host_path[0].type: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.247+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.mongodb.kubernetes_persistent_volume.mongodb_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].storage_class_name: was null, but now cty.StringVal("")
+      - .spec[0].persistent_volume_source[0].host_path[0].type: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.247+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.meilisearch.kubernetes_persistent_volume.meilisearch_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].storage_class_name: was null, but now cty.StringVal("")
+      - .spec[0].persistent_volume_source[0].host_path[0].type: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.247+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.redis.kubernetes_persistent_volume.redis_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .spec[0].storage_class_name: was null, but now cty.StringVal("")
+      - .spec[0].persistent_volume_source[0].host_path[0].type: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.249+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.prometheus.kubernetes_service.reactory_prometheus, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_load_balancer: planned value cty.True for a non-computed attribute
+      - .spec[0].publish_not_ready_addresses: planned value cty.False for a non-computed attribute
+      - .spec[0].session_affinity: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].allocate_load_balancer_node_ports: planned value cty.True for a non-computed attribute
+      - .spec[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].session_affinity_config: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:10.252+0200 [INFO]  Starting apply for module.prometheus.kubernetes_service.reactory_prometheus
+2025-02-07T04:00:10.259+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.grafana.kubernetes_service.reactory_grafana, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_load_balancer: planned value cty.True for a non-computed attribute
+      - .spec[0].publish_not_ready_addresses: planned value cty.False for a non-computed attribute
+      - .spec[0].session_affinity: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].allocate_load_balancer_node_ports: planned value cty.True for a non-computed attribute
+      - .spec[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].session_affinity_config: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:10.262+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.meilisearch.kubernetes_persistent_volume_claim.meilisearch_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.262+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.mongodb.kubernetes_persistent_volume_claim.mongodb_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.262+0200 [INFO]  Starting apply for module.grafana.kubernetes_service.reactory_grafana
+2025-02-07T04:00:10.269+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.express_server.kubernetes_service.reactory_express_server, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_load_balancer: planned value cty.True for a non-computed attribute
+      - .spec[0].allocate_load_balancer_node_ports: planned value cty.True for a non-computed attribute
+      - .spec[0].publish_not_ready_addresses: planned value cty.False for a non-computed attribute
+      - .spec[0].session_affinity: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].session_affinity_config: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:10.272+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.express_server.kubernetes_persistent_volume_claim.reactory_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_until_bound: planned value cty.True for a non-computed attribute
+2025-02-07T04:00:10.272+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.prometheus.kubernetes_service.reactory_prometheus, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].load_balancer_class: was null, but now cty.StringVal("")
+      - .spec[0].external_name: was null, but now cty.StringVal("")
+      - .spec[0].load_balancer_ip: was null, but now cty.StringVal("")
+      - .spec[0].port[0].app_protocol: was null, but now cty.StringVal("")
+      - .spec[0].port[0].name: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.272+0200 [INFO]  Starting apply for module.express_server.kubernetes_service.reactory_express_server
+2025-02-07T04:00:10.272+0200 [INFO]  Starting apply for module.express_server.kubernetes_persistent_volume_claim.reactory_data
+2025-02-07T04:00:10.277+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.pwa_client.kubernetes_deployment.reactory_pwa_client, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].port[0].protocol: planned value cty.StringVal("TCP") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:10.278+0200 [INFO]  Starting apply for module.pwa_client.kubernetes_deployment.reactory_pwa_client
+2025-02-07T04:00:10.280+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.postgres.kubernetes_persistent_volume_claim.postgres_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_until_bound: planned value cty.True for a non-computed attribute
+2025-02-07T04:00:10.283+0200 [INFO]  Starting apply for module.postgres.kubernetes_persistent_volume_claim.postgres_data
+2025-02-07T04:00:10.294+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.prometheus.kubernetes_deployment.reactory_prometheus, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:10.294+0200 [INFO]  Starting apply for module.prometheus.kubernetes_deployment.reactory_prometheus
+2025-02-07T04:00:10.296+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.meilisearch.kubernetes_deployment.reactory_meilisearch, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].volume[0].persistent_volume_claim[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:10.296+0200 [INFO]  Starting apply for module.meilisearch.kubernetes_deployment.reactory_meilisearch
+2025-02-07T04:00:10.305+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.grafana.kubernetes_service.reactory_grafana, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].load_balancer_class: was null, but now cty.StringVal("")
+      - .spec[0].external_name: was null, but now cty.StringVal("")
+      - .spec[0].load_balancer_ip: was null, but now cty.StringVal("")
+      - .spec[0].port[0].app_protocol: was null, but now cty.StringVal("")
+      - .spec[0].port[0].name: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.310+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.redis.kubernetes_persistent_volume_claim.redis_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.322+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.mongodb.kubernetes_deployment.reactory_mongodb, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].volume[0].persistent_volume_claim[0].read_only: planned value cty.False for a non-computed attribute
+2025-02-07T04:00:10.322+0200 [INFO]  Starting apply for module.mongodb.kubernetes_deployment.reactory_mongodb
+2025-02-07T04:00:10.330+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.redis.kubernetes_deployment.reactory_redis, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].volume[0].persistent_volume_claim[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+2025-02-07T04:00:10.330+0200 [INFO]  Starting apply for module.redis.kubernetes_deployment.reactory_redis
+2025-02-07T04:00:10.333+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.express_server.kubernetes_service.reactory_express_server, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].load_balancer_ip: was null, but now cty.StringVal("")
+      - .spec[0].external_name: was null, but now cty.StringVal("")
+      - .spec[0].load_balancer_class: was null, but now cty.StringVal("")
+      - .spec[0].port[0].app_protocol: was null, but now cty.StringVal("")
+      - .spec[0].port[0].name: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.504+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.express_server.kubernetes_persistent_volume_claim.reactory_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.523+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.express_server.kubernetes_deployment.reactory_express_server, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].volume[0].persistent_volume_claim[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[1].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[1].read_only: planned value cty.False for a non-computed attribute
+2025-02-07T04:00:10.524+0200 [INFO]  Starting apply for module.express_server.kubernetes_deployment.reactory_express_server
+2025-02-07T04:00:10.912+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.postgres.kubernetes_persistent_volume_claim.postgres_data, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+2025-02-07T04:00:10.931+0200 [WARN]  Provider "registry.terraform.io/hashicorp/kubernetes" produced an invalid plan for module.postgres.kubernetes_deployment.reactory_postgres, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .wait_for_rollout: planned value cty.True for a non-computed attribute
+      - .spec[0].min_ready_seconds: planned value cty.NumberIntVal(0) for a non-computed attribute
+      - .spec[0].paused: planned value cty.False for a non-computed attribute
+      - .spec[0].progress_deadline_seconds: planned value cty.NumberIntVal(600) for a non-computed attribute
+      - .spec[0].revision_history_limit: planned value cty.NumberIntVal(10) for a non-computed attribute
+      - .spec[0].strategy: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].dns_policy: planned value cty.StringVal("ClusterFirst") for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_pid: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_network: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].share_process_namespace: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].automount_service_account_token: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].termination_grace_period_seconds: planned value cty.NumberIntVal(30) for a non-computed attribute
+      - .spec[0].template[0].spec[0].enable_service_links: planned value cty.True for a non-computed attribute
+      - .spec[0].template[0].spec[0].host_ipc: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].restart_policy: planned value cty.StringVal("Always") for a non-computed attribute
+      - .spec[0].template[0].spec[0].image_pull_secrets: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].readiness_gate: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].container[0].stdin: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].termination_message_path: planned value cty.StringVal("/dev/termination-log") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].tty: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].stdin_once: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].mount_propagation: planned value cty.StringVal("None") for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].read_only: planned value cty.False for a non-computed attribute
+      - .spec[0].template[0].spec[0].container[0].resources: attribute representing nested block must not be unknown itself; set nested attribute values to unknown instead
+      - .spec[0].template[0].spec[0].volume[0].persistent_volume_claim[0].read_only: planned value cty.False for a non-computed attribute
+2025-02-07T04:00:10.931+0200 [INFO]  Starting apply for module.postgres.kubernetes_deployment.reactory_postgres
+2025-02-07T04:01:05.628+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.jaeger.kubernetes_deployment.reactory_jaeger, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].metadata[0].namespace: was null, but now cty.StringVal("")
+      - .spec[0].template[0].metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].runtime_class_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].active_deadline_seconds: was null, but now cty.NumberIntVal(0)
+      - .spec[0].template[0].spec[0].subdomain: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].priority_class_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].container[0].working_dir: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].container[0].port[0].name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].container[0].port[0].host_ip: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].container[0].port[0].host_port: was null, but now cty.NumberIntVal(0)
+      - .spec[0].template[0].spec[0].container[0].port[1].host_ip: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].container[0].port[1].host_port: was null, but now cty.NumberIntVal(0)
+      - .spec[0].template[0].spec[0].container[0].port[1].name: was null, but now cty.StringVal("")
+2025-02-07T04:03:45.764+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.grafana.kubernetes_deployment.reactory_grafana, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].metadata[0].namespace: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].active_deadline_seconds: was null, but now cty.NumberIntVal(0)
+      - .spec[0].template[0].spec[0].subdomain: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].priority_class_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].runtime_class_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].container[0].working_dir: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].sub_path: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].container[0].volume_mount[1].sub_path: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].volume[0].host_path[0].type: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].volume[1].host_path[0].type: was null, but now cty.StringVal("")
+2025-02-07T04:06:26.142+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.redis.kubernetes_deployment.reactory_redis, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].metadata[0].namespace: was null, but now cty.StringVal("")
+      - .spec[0].template[0].metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].subdomain: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].priority_class_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].runtime_class_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].active_deadline_seconds: was null, but now cty.NumberIntVal(0)
+      - .spec[0].template[0].spec[0].container[0].working_dir: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].sub_path: was null, but now cty.StringVal("")
+2025-02-07T04:08:06.222+0200 [WARN]  Provider "provider[\"registry.terraform.io/hashicorp/kubernetes\"]" produced an unexpected new value for module.meilisearch.kubernetes_deployment.reactory_meilisearch, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].metadata[0].namespace: was null, but now cty.StringVal("")
+      - .spec[0].template[0].metadata[0].generate_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].subdomain: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].priority_class_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].runtime_class_name: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].active_deadline_seconds: was null, but now cty.NumberIntVal(0)
+      - .spec[0].template[0].spec[0].container[0].working_dir: was null, but now cty.StringVal("")
+      - .spec[0].template[0].spec[0].container[0].volume_mount[0].sub_path: was null, but now cty.StringVal("")
+2025-02-07T06:10:15.762+0200 [ERROR] provider.terraform-provider-kubernetes_v2.35.1_x5: Response contains error diagnostic: @module=sdk.proto diagnostic_summary="Waiting for rollout to finish: 2 replicas wanted; 0 replicas Ready" tf_proto_version=5.7 tf_provider_addr=registry.terraform.io/hashicorp/kubernetes tf_req_id=28d7b07f-d8b5-ffe5-96c4-348c9171ce19 tf_resource_type=kubernetes_deployment @caller=github.com/hashicorp/terraform-plugin-go@v0.25.0/tfprotov5/internal/diag/diagnostics.go:58 tf_rpc=ApplyResourceChange diagnostic_detail="" diagnostic_severity=ERROR timestamp="2025-02-07T06:10:15.762+0200"
+2025-02-07T06:10:15.776+0200 [ERROR] provider.terraform-provider-kubernetes_v2.35.1_x5: Response contains error diagnostic: diagnostic_detail="" diagnostic_severity=ERROR diagnostic_summary="Waiting for rollout to finish: 1 replicas wanted; 0 replicas Ready" tf_proto_version=5.7 @caller=github.com/hashicorp/terraform-plugin-go@v0.25.0/tfprotov5/internal/diag/diagnostics.go:58 tf_rpc=ApplyResourceChange tf_provider_addr=registry.terraform.io/hashicorp/kubernetes tf_req_id=bf609893-8a76-f7fb-46f6-c91ff5969647 @module=sdk.proto tf_resource_type=kubernetes_deployment timestamp="2025-02-07T06:10:15.776+0200"
+2025-02-07T06:10:15.779+0200 [ERROR] vertex "module.pwa_client.kubernetes_deployment.reactory_pwa_client" error: Waiting for rollout to finish: 2 replicas wanted; 0 replicas Ready
+2025-02-07T06:10:15.790+0200 [ERROR] vertex "module.prometheus.kubernetes_deployment.reactory_prometheus" error: Waiting for rollout to finish: 1 replicas wanted; 0 replicas Ready
+2025-02-07T06:10:15.805+0200 [ERROR] provider.terraform-provider-kubernetes_v2.35.1_x5: Response contains error diagnostic: diagnostic_detail="" diagnostic_severity=ERROR diagnostic_summary="Waiting for rollout to finish: 1 replicas wanted; 0 replicas Ready" tf_proto_version=5.7 tf_req_id=854bf536-2665-8568-19d4-adbb89a38788 @caller=github.com/hashicorp/terraform-plugin-go@v0.25.0/tfprotov5/internal/diag/diagnostics.go:58 tf_rpc=ApplyResourceChange tf_resource_type=kubernetes_deployment @module=sdk.proto tf_provider_addr=registry.terraform.io/hashicorp/kubernetes timestamp="2025-02-07T06:10:15.804+0200"
+2025-02-07T06:10:15.815+0200 [ERROR] vertex "module.mongodb.kubernetes_deployment.reactory_mongodb" error: Waiting for rollout to finish: 1 replicas wanted; 0 replicas Ready
+2025-02-07T06:10:16.013+0200 [ERROR] provider.terraform-provider-kubernetes_v2.35.1_x5: Response contains error diagnostic: diagnostic_severity=ERROR diagnostic_summary="Waiting for rollout to finish: 1 replicas wanted; 0 replicas Ready" tf_provider_addr=registry.terraform.io/hashicorp/kubernetes tf_req_id=5beffe85-2fc0-bdc4-ae24-86c55f5353a3 @caller=github.com/hashicorp/terraform-plugin-go@v0.25.0/tfprotov5/internal/diag/diagnostics.go:58 @module=sdk.proto tf_resource_type=kubernetes_deployment tf_rpc=ApplyResourceChange diagnostic_detail="" tf_proto_version=5.7 timestamp="2025-02-07T06:10:16.013+0200"
+2025-02-07T06:10:16.024+0200 [ERROR] vertex "module.express_server.kubernetes_deployment.reactory_express_server" error: Waiting for rollout to finish: 1 replicas wanted; 0 replicas Ready
+2025-02-07T06:10:16.416+0200 [ERROR] provider.terraform-provider-kubernetes_v2.35.1_x5: Response contains error diagnostic: diagnostic_summary="Waiting for rollout to finish: 1 replicas wanted; 0 replicas Ready" tf_proto_version=5.7 @caller=github.com/hashicorp/terraform-plugin-go@v0.25.0/tfprotov5/internal/diag/diagnostics.go:58 @module=sdk.proto diagnostic_detail="" diagnostic_severity=ERROR tf_provider_addr=registry.terraform.io/hashicorp/kubernetes tf_req_id=2c00219a-2629-04fc-3fbb-5c7be403d56e tf_resource_type=kubernetes_deployment tf_rpc=ApplyResourceChange timestamp="2025-02-07T06:10:16.413+0200"
+2025-02-07T06:10:16.428+0200 [ERROR] vertex "module.postgres.kubernetes_deployment.reactory_postgres" error: Waiting for rollout to finish: 1 replicas wanted; 0 replicas Ready
+2025-02-07T06:10:16.445+0200 [INFO]  provider: plugin process exited: plugin=.terraform/providers/registry.terraform.io/hashicorp/kubernetes/2.35.1/darwin_arm64/terraform-provider-kubernetes_v2.35.1_x5 id=62667

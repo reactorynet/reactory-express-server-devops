@@ -1,0 +1,21 @@
+# Schema generator version: 1.0.0
+version: 1.0.0
+
+# specify the generator and options
+generator: core.ReactoryPostgresGenerator@1.0.0
+# specify in which module the generated files will be saved
+module: core
+# specify the output, either state, console, storage or a folder
+output: ${env.REACTORY_SERVER}/src/modules/core/forms/generated
+format: ts
+options:
+  # specify the database connection id
+  # ensure this connection is configure 
+  # in the client configuration
+  connection: reactory.postgres.connection
+
+  roles: ['ADMIN', 'USER']
+  # list of entities to generate
+  entities:
+    - name: reactory_audit
+      type: table

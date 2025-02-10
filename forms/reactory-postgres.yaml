@@ -1,0 +1,13 @@
+# reactory-cli configuration version: 1.0.0
+version: 1.0.0
+
+# specify the reactory client and user
+# for the cli
+partner: reactory
+user: ${env.REACTORY_APPLICATION_EMAIL}
+password: ${env.REACTORY_APPLICATION_PASSWORD}
+
+jobs:
+  - command: SchemaGen
+    args: 
+     - --config=./config/reactory/forms/schema-postgres.yaml

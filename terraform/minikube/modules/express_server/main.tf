@@ -54,33 +54,42 @@ resource "kubernetes_deployment" "reactory_express_server" {
     replicas = 1
     selector {
       match_labels = {
-        app = "express-server"
+        app = "reactory-express-server"
       }
     }
     template {
       metadata {
         labels = {
-          app = "express-server"
+          app = "reactory-express-server"
         }
       }
       spec {
         container {
-          name  = "express-server"
-          image = "localhost/reactory/reactory-express-server:1.1.0"          
-        }
-        volume {
-          name = "reactory-data"
-          persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.reactory_data.metadata[0].name
+          name  = "reactory-express-server"
+          image = "localhost/reactory/reactory-express-server:1.1.0"
+          command = ["/bin/sh"]
+          args = [ "-c", "bin/run-otel.sh" ]
+          env {
+            name = "REACTORY_HOME"
+            value = "/reactory"
           }
-        }        
-        volume {
-          name = "reactory-env-file"
-          host_path {
-            path = "/etc/reactory/.env"
-            type = "FileOrCreate"
+          env {
+            name = "REACTORY_DATA"
+            value = "/reactory/reactory-data"
           }
-        }        
+          env {
+            name = "REACTORY_SERVER" 
+            value = "/reactory/reactory-express-server"
+          }
+          env {
+            name = "REACTORY_CLIENT"
+            value = "/reactory/reactory-pwa-client"
+          }
+          env {
+            name = "REACTORY_PLUGINS"
+            value = "/reactory/reactory-data/plugins"
+          }
+        }                
       }
     }
   }
@@ -98,6 +107,8 @@ resource "kubernetes_service" "reactory_express_server" {
     port {
       port        = 4000
       target_port = 4000
+      node_port = 30040
+      protocol = "TCP"
     }
     type = "NodePort"
   }

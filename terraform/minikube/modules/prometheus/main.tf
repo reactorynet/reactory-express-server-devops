@@ -8,6 +8,7 @@ variable "server_modules_root" {
   type        = string
 }
 
+
 resource "kubernetes_deployment" "reactory_prometheus" {
   metadata {
     name      = "reactory-prometheus"
@@ -32,11 +33,11 @@ resource "kubernetes_deployment" "reactory_prometheus" {
           image = "prom/prometheus:latest"
           volume_mount {
             mount_path = "/etc/prometheus"
-            name       = "prometheus-config"            
+            name       = "prometheus-config"
           }
         }
         volume {
-          name = "prometheus-config"          
+          name = "prometheus-config"
           host_path {
             path = "/etc/prometheus"
             type = "DirectoryOrCreate"

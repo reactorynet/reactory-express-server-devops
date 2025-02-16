@@ -87,6 +87,8 @@ resource "kubernetes_service" "reactory_grafana" {
     port {
       port        = 3000
       target_port = 3000
+      protocol = "TCP"
+      node_port = 30000
     }
     type = "NodePort"
   }

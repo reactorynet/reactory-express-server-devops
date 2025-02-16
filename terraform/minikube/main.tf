@@ -17,6 +17,8 @@ resource "kubernetes_namespace" "reactory" {
   }
 }
 
+# Variables start
+
 output "reactory_namespace" {
   value = kubernetes_namespace.reactory.metadata[0].name
 }
@@ -106,7 +108,7 @@ variable "reactory_server_modules_root" {
   type        = string
 }
 
-
+# Modules start
 module "mongodb" {
   source = "./modules/mongodb"
   mongo_user = var.reactory_mongo_user

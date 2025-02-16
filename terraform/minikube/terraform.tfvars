@@ -9,7 +9,7 @@ reactory_mongo_port=27017
 reactory_postgres_user="reactory"
 reactory_postgres_db="reactory"
 reactory_postgres_password="reactory"
-reactory_postgres_host="localhost"
+reactory_postgres_host="postgres.reactory.minikube"
 reactory_postgres_port="5432"
 
 reactory_redis_password="reactory"

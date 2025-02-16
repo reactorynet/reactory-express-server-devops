@@ -75,6 +75,10 @@ if [ ${MINIKUBE_SKIP_FILE_COPY:-"false"} = "true" ]; then
     echo "🛠️ Synchronizing Reactory data to $MINIKUBE_FILES/var/reactory"
     rsync -av --progress "$REACTORY_SERVER/build/server/$REACTORY_CONFIG/data/" "$MINIKUBE_FILES/var/reactory-data"
   fi
+  
+  # use minikube ssh to set enable write permissions for the grafana and prometheus directories
+  minikube ssh "sudo chmod -R 777 /etc/grafana"
+  minikube ssh "sudo chmod -R 777 /etc/prometheus"
 
   minikube start
 fi

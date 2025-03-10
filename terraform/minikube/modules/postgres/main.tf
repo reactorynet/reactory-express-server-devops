@@ -25,7 +25,7 @@ resource "kubernetes_persistent_volume" "postgres_data" {
   }
   spec {
     capacity = {
-      storage = "5Gi"
+      storage = "2Gi"
     }
     access_modes = ["ReadWriteOnce"]
     persistent_volume_source {      
@@ -45,7 +45,7 @@ resource "kubernetes_persistent_volume_claim" "postgres_data" {
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
-        storage = "5Gi"
+        storage = "2Gi"
       }
     }
   }

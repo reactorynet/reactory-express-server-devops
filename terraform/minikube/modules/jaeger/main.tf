@@ -38,7 +38,7 @@ resource "kubernetes_deployment" "reactory_jaeger" {
   }
 }
 
-resource "kubernetes_service" "reactory_jaeger" {
+resource "kubernetes_service" "reactory_jaeger" {  
   metadata {
     name      = "reactory-jaeger"
     namespace = var.namespace
@@ -51,11 +51,13 @@ resource "kubernetes_service" "reactory_jaeger" {
       port        = 4318
       target_port = 4318
       name = "query"
+      node_port = 30004
     }
     port {
-      port        = 16686
-      target_port = 16686
+      port        = 80
+      target_port = 80
       name = "web"
+      node_port = 30005
     }
     type = "NodePort"
   }

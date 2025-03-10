@@ -18,29 +18,28 @@ resource "kubernetes_deployment" "reactory_prometheus" {
     replicas = 1
     selector {
       match_labels = {
-        app = "prometheus"
+        app = "reactory-prometheus"
       }
     }
     template {
       metadata {
         labels = {
-          app = "prometheus"
+          app = "reactory-prometheus"
         }
       }
       spec {
         container {
-          name  = "prometheus"
+          name  = "reactory-prometheus"
           image = "prom/prometheus:latest"
           volume_mount {
             mount_path = "/etc/prometheus"
             name       = "prometheus-config"
-          }
+          }        
         }
         volume {
           name = "prometheus-config"
           host_path {
             path = "/etc/prometheus"
-            type = "DirectoryOrCreate"
           }
         }
       }
@@ -56,12 +55,11 @@ resource "kubernetes_service" "reactory_prometheus" {
   }
   spec {
     selector = {
-      app = "prometheus"
+      app = "reactory-prometheus"
     }
     port {
       port        = 9090
       target_port = 9090
     }
-    type = "NodePort"
   }
 }

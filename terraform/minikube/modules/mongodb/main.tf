@@ -16,7 +16,6 @@ variable "mongo_db" {
 variable "namespace" {
   description = "Namespace"
   type        = string
-  
 }
 
 resource "kubernetes_persistent_volume" "mongodb_data" {
@@ -53,20 +52,20 @@ resource "kubernetes_persistent_volume_claim" "mongodb_data" {
 
 resource "kubernetes_deployment" "reactory_mongodb" {
   metadata {
-    name      = "reactory-mongodb"
+    name      = "reactory-mongo"
     namespace = var.namespace
   }
   spec {
     replicas = 1
     selector {
       match_labels = {
-        app = "mongodb"
+        app = "reactory-mongo"
       }
     }
     template {
       metadata {
         labels = {
-          app = "mongodb"
+          app = "reactory-mongo"
         }
       }
       spec {
@@ -97,6 +96,22 @@ resource "kubernetes_deployment" "reactory_mongodb" {
           }
         }
       }
+    }
+  }
+}
+
+resource "kubernetes_service" "reactory_mongodb" {
+  metadata {
+    name      = "reactory-mongo"
+    namespace = var.namespace
+  }
+  spec {
+    selector = {
+      app = "reactory-mongo"
+    }
+    port {
+      port        = 27017
+      target_port = 27017
     }
   }
 }

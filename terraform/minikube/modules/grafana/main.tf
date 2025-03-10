@@ -24,18 +24,18 @@ resource "kubernetes_deployment" "reactory_grafana" {
     replicas = 1
     selector {
       match_labels = {
-        app = "grafana"
+        app = "reactory-grafana"
       }
     }
     template {
       metadata {
         labels = {
-          app = "grafana"
+          app = "reactory-grafana"
         }
       }
       spec {
         container {
-          name  = "grafana"
+          name  = "reactory-grafana"
           image = "grafana/grafana:latest"
           env {
             name  = "GF_SERVER_ROOT_CA_CERT"
@@ -43,7 +43,7 @@ resource "kubernetes_deployment" "reactory_grafana" {
           }
           env {
             name  = "GF_SERVER_HTTP_PORT"
-            value = "3000"
+            value = "80"
           }
           env {
             name  = "GF_SECURITY_ADMIN_PASSWORD"
@@ -82,13 +82,13 @@ resource "kubernetes_service" "reactory_grafana" {
   }
   spec {
     selector = {
-      app = "grafana"
+      app = "reactory-grafana"
     }
     port {
-      port        = 3000
-      target_port = 3000
+      port        = 80
+      target_port = 80
+      node_port = 30003
       protocol = "TCP"
-      node_port = 30000
     }
     type = "NodePort"
   }

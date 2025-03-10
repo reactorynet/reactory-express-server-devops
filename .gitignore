@@ -4,5 +4,6 @@
 /terraform/**/*.tfstate
 /terraform/**/*.tfstate.backup
 /terraform/**/*.tfsvars
+/terraform/**/*.terraform.lock.hcl
 /terraform/minikube/.logs/*
-terraform/minikuke/.terraform/*
+/terraform/minikube/.terraform/**

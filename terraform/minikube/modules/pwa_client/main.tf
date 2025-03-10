@@ -12,13 +12,13 @@ resource "kubernetes_deployment" "reactory_pwa_client" {
     replicas = 1
     selector {
       match_labels = {
-        app = "pwa-nginx"
+        app = "reactory-pwa-client"
       }
     }
     template {
       metadata {
         labels = {
-          app = "pwa-nginx"
+          app = "reactory-pwa-client"
         }
       }
       spec {
@@ -31,5 +31,24 @@ resource "kubernetes_deployment" "reactory_pwa_client" {
         }
       }
     }
+  }
+}
+
+resource "kubernetes_service" "reactory_pwa_client" {
+  metadata {
+    name      = "reactory-pwa-client"
+    namespace = var.namespace
+  }
+  spec {
+    selector = {
+      app = "reactory-pwa-client"
+    }
+    port {
+      port        = 80
+      target_port = 80
+      node_port = 30001
+      protocol = "TCP"
+    }
+    type = "NodePort"
   }
 }

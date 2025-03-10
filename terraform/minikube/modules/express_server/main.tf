@@ -13,38 +13,6 @@ variable "reactory_home" {
   type        = string
 }
 
-resource "kubernetes_persistent_volume" "reactory_data" {
-  metadata {
-    name = "reactory-data"
-  }
-  spec {
-    capacity = {
-      storage = "2Gi"
-    }
-    access_modes = ["ReadWriteOnce"]
-    persistent_volume_source {
-      host_path {
-        path = "/var/reactory-data"        
-      }      
-    }
-  }
-}
-
-resource "kubernetes_persistent_volume_claim" "reactory_data" {
-  metadata {
-    name      = "reactory-data"
-    namespace = var.namespace
-  }
-  spec {
-    access_modes = ["ReadWriteOnce"]
-    resources {
-      requests = {
-        storage = "2Gi"
-      }
-    }
-  }
-}
-
 resource "kubernetes_deployment" "reactory_express_server" {
   metadata {
     name      = "reactory-express-server"
@@ -89,6 +57,19 @@ resource "kubernetes_deployment" "reactory_express_server" {
             name = "REACTORY_PLUGINS"
             value = "/reactory/reactory-data/plugins"
           }
+          
+          volume_mount {
+            name = "reactory-data-volume"
+            mount_path = "/reactory/reactory-data"
+          }
+        }
+        
+        volume {
+          name = "reactory-data-volume"
+          host_path {
+            path = "/var/reactory"
+            type = "Directory"
+          }
         }                
       }
     }
@@ -102,13 +83,13 @@ resource "kubernetes_service" "reactory_express_server" {
   }
   spec {
     selector = {
-      app = "express-server"
+      app = "reactory-express-server"
     }
     port {
       port        = 4000
       target_port = 4000
-      node_port = 30040
       protocol = "TCP"
+      node_port = 30002
     }
     type = "NodePort"
   }

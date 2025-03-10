@@ -1,0 +1,38 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: reactory-pwa-gateway
+  namespace: reactory
+spec:
+  # The selector matches the ingress gateway pod labels.
+  # If you installed Istio using Helm following the standard documentation, this would be "istio=ingress"
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "pwa.reactory.minikube"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: reactory-pwa-gateway
+spec:
+  hosts:
+  - "pwa.reactory.minikube"
+  gateways:
+  - reactory-pwa-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    rewrite:
+      uri: "/"
+    route:
+    - destination:
+        host: reactory-pwa-client
+        port:
+          number: 80

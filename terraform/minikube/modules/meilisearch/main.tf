@@ -37,7 +37,7 @@ resource "kubernetes_persistent_volume_claim" "meilisearch_data" {
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
-        storage = "5Gi"
+        storage = "2Gi"
       }
     }
   }

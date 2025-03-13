@@ -60,6 +60,7 @@ resource "kubernetes_service" "reactory_prometheus" {
     port {
       port        = 9090
       target_port = 9090
+      node_port = 30090
     }
   }
 }

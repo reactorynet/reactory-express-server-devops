@@ -84,3 +84,20 @@ resource "kubernetes_deployment" "reactory_meilisearch" {
     }
   }
 }
+
+resource "kubernetes_service" "reactory_meilisearch" {
+  metadata {
+    name      = "reactory-meilisearch"
+    namespace = var.namespace
+  }
+  spec {
+    selector = {
+      app = "meilisearch"
+    }
+    port {
+      port        = 7700
+      target_port = 7700
+      node_port = 30006
+    }
+  }
+}

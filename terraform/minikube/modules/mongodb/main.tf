@@ -111,7 +111,7 @@ resource "kubernetes_service" "reactory_mongodb" {
     }
     port {
       port        = 27017
-      target_port = 27017
+      target_port = 27017      
     }
   }
 }

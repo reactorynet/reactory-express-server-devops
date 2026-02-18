@@ -102,8 +102,8 @@ services:
     networks:
       - reactory-network
 
-  reactory_exress_server:
-    image: localhost/${REACTORY_CONFIG_ID:-reactory}/reactory-express-server:${BUILD_VERSION:-latest}
+  reactory_express_server:
+    image: localhost/${REACTORY_CONFIG_ID:-reactory}/reactory-express-server:1.1.0
     container_name: ${REACTORY_CONFIG_ID:-reactory}-express-server
     working_dir: /${REACTORY_CONFIG_ID:-reactory}/${REACTORY_CONFIG_ID:-reactory}-express-server
     command: bin/run-otel.sh

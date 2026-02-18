@@ -1,4 +1,4 @@
-name: ${PODMAN_COMPOSE_PROJECT_NAME:-reactory-fullstack}
+name: ${PODMAN_COMPOSE_PROJECT_NAME:-reactory-develop}
 services:
   reactory_mongodb:
     image: mongo:${MONGO_VERSION:-latest}
@@ -10,7 +10,7 @@ services:
     ports:
       - "${MONGO_PORT}:${MONGO_PORT}"
     volumes:
-      - mongodb_data:/data/db
+      - ${REACTORY_SERVER}/docker/${PODMAN_COMPOSE_PROJECT_NAME:-reactory-develop}/mongodb:/data/db
       - ${REACTORY_SERVER}/certificates:/etc/ssl/certs
     networks:
       - reactory-network
@@ -25,7 +25,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ${REACTORY_SERVER}/docker/${PODMAN_COMPOSE_PROJECT_NAME:-reactory-develop}/postgres:/var/lib/postgresql/data
       - ${REACTORY_SERVER}/certificates:/etc/ssl/certs
     networks:
       - reactory-network
@@ -38,7 +38,7 @@ services:
     ports:
       - "7700:7700"
     volumes:
-      - meilisearch_data:/data.ms
+      - ${REACTORY_SERVER}/docker/${PODMAN_COMPOSE_PROJECT_NAME:-reactory-develop}/meilisearch:/data.ms
       - ${REACTORY_SERVER}/certs:/etc/ssl/certs
     networks:
       - reactory-network
@@ -49,7 +49,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data
+      - ${REACTORY_SERVER}/docker/${PODMAN_COMPOSE_PROJECT_NAME:-reactory-develop}/redis:/data
       - ${REACTORY_SERVER}/certificates:/etc/ssl/certs      
     command: [ "redis-server", "--requirepass", "${REACTORY_REDIS_PASSWORD:-reactory}" ]
     networks:
@@ -100,46 +100,7 @@ services:
     volumes:
       - ${REACTORY_SERVER}/src/modules/reactory-telemetry/data/prometheus:/etc/prometheus
     networks:
-      - reactory-network
-
-  reactory_express_server:
-    image: localhost/${REACTORY_CONFIG_ID:-reactory}/reactory-express-server:1.1.0
-    container_name: ${REACTORY_CONFIG_ID:-reactory}-express-server
-    working_dir: /${REACTORY_CONFIG_ID:-reactory}/${REACTORY_CONFIG_ID:-reactory}-express-server
-    command: bin/run-otel.sh
-    ports:
-      - '4000:4000'
-      - '9464:9464'
-    volumes:
-      - ${REACTORY_DATA}:/reactory/reactory-data
-      - ${REACTORY_CLIENT}:/reactory/reactory-client
-      - ${REACTORY_SERVER}/config/${REACTORY_CONFIG_ID:-reactory}/.env.${REACTORY_ENV_ID:-podman}:/reactory/reactory-express-server/.env
-    environment:
-      - REACTORY_HOME=/reactory
-      - REACTORY_DATA=/reactory/reactory-data
-      - REACTORY_SERVER=/reactory/reactory-express-server
-      - REACTORY_CLIENT=/reactory/reactory-client
-      - REACTORY_PLUGINS=/reactory/reactory-data/plugins
-    networks:
-      - reactory-network
-
-  reactory_pwa_client:
-    image: localhost/reactory/reactory-pwa-client:1.1.0
-    container_name: reactory-pwa-client
-    ports:
-      - '9000:80'
-    volumes:
-      - ${REACTORY_CLIENT}/build/reactory:/usr/share/nginx/html
-    networks:
-      - reactory-network
-
-  
-
-volumes:
-  postgres_data:
-  meilisearch_data:
-  mongodb_data:
-  redis-data:
+      - reactory-network  
 
 networks:
   reactory-network:

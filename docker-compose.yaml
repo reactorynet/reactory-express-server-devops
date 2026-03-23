@@ -1,4 +1,4 @@
-name: ${PODMAN_COMPOSE_PROJECT_NAME:-reactory-fullstack}
+name: reactory-fullstack
 services:
   reactory_mongodb:
     image: mongo:${MONGO_VERSION:-latest}
@@ -133,31 +133,7 @@ services:
     networks:
       - reactory-network
 
-  reactory_speech_service:
-    build:
-      context: ${REACTORY_HOME:-../../..}/reactory-speech-service
-      dockerfile: Dockerfile
-    container_name: reactory-speech-service
-    ports:
-      - '${SPEECH_SERVICE_PORT:-8765}:8765'
-    volumes:
-      - speech_models:/app/models
-    environment:
-      - SPEECH_SERVICE_HOST=0.0.0.0
-      - SPEECH_SERVICE_PORT=8765
-      - KOKORO_DEFAULT_VOICE=${KOKORO_DEFAULT_VOICE:-af_heart}
-      - WHISPER_MODEL_SIZE=${WHISPER_MODEL_SIZE:-base}
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8765/health')"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 60s
-    networks:
-      - reactory-network
-
 volumes:
-  speech_models:
   postgres_data:
   meilisearch_data:
   mongodb_data:

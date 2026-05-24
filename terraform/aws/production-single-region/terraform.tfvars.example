@@ -1,0 +1,46 @@
+# ---------------------------------------------------------------------------
+# Example tfvars for production-single-region
+# Copy to terraform.tfvars and fill in real values.
+# DO NOT commit terraform.tfvars to source control.
+# Secrets should be injected as TF_VAR_* environment variables in CI/CD.
+# ---------------------------------------------------------------------------
+
+aws_region  = "us-west-1"
+project     = "reactory"
+environment = "prod"
+
+image_tag   = "1.1.0"
+
+domain_name               = "app.example.com"
+subject_alternative_names = ["www.app.example.com"]
+
+# Restrict API server access to your office/VPN CIDRs
+api_allowed_cidrs = ["203.0.113.0/24"]
+
+# Scale settings (tune to your load)
+express_server_replicas     = 2
+express_server_max_replicas = 8
+pwa_client_replicas         = 2
+pwa_client_max_replicas     = 6
+
+# Managed data service sizing
+docdb_instance_class      = "db.r6g.large"
+rds_max_capacity          = 16
+valkey_node_type          = "cache.r7g.large"
+opensearch_instance_type  = "r6g.large.search"
+opensearch_volume_size_gb = 100
+
+# Database names (non-sensitive)
+mongo_database    = "reactory"
+postgres_database = "reactory"
+
+# --- SECRETS: use TF_VAR_* env vars, not this file ---
+# TF_VAR_mongo_username
+# TF_VAR_mongo_password
+# TF_VAR_postgres_username
+# TF_VAR_postgres_password
+# TF_VAR_valkey_auth_token
+# TF_VAR_opensearch_username
+# TF_VAR_opensearch_password
+# TF_VAR_grafana_admin_password
+# TF_VAR_app_secret_key

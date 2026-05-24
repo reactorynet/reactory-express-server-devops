@@ -102,5 +102,11 @@ services:
     networks:
       - reactory-network  
 
+volumes:
+  postgres_data:
+  meilisearch_data:
+  mongodb_data:
+  redis-data:
+
 networks:
   reactory-network:

@@ -103,7 +103,8 @@ services:
       - reactory-network
 
   reactory_express_server:
-    image: localhost/${REACTORY_CONFIG_ID:-reactory}/reactory-express-server:1.1.0
+    image: localhost/${REACTORY_CONFIG_ID:-reactory}/reactory-express-server:${BUILD_VERSION:-latest}
+    pull_policy: never
     container_name: ${REACTORY_CONFIG_ID:-reactory}-express-server
     working_dir: /${REACTORY_CONFIG_ID:-reactory}/${REACTORY_CONFIG_ID:-reactory}-express-server
     command: bin/run-otel.sh
@@ -124,7 +125,8 @@ services:
       - reactory-network
 
   reactory_pwa_client:
-    image: localhost/reactory/reactory-pwa-client:1.1.0
+    image: localhost/${REACTORY_CONFIG_ID:-reactory}/reactory-pwa-client:${BUILD_VERSION:-latest}
+    pull_policy: never
     container_name: reactory-pwa-client
     ports:
       - '9000:80'

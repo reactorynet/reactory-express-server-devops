@@ -1,6 +1,8 @@
 *.env*
 /certs/*
 .DS_Store
+!env.podman-sample
+!env.sample
 /terraform/**/*.tfstate
 /terraform/**/*.tfstate.backup
 /terraform/**/*.tfsvars

@@ -163,7 +163,7 @@ services:
     ports:
       - '9000:80'
     volumes:
-      - ${REACTORY_CLIENT}/build/reactory:/usr/share/nginx/html
+      - ${REACTORY_CLIENT}/build/reactory/${REACTORY_ENV_ID:-podman}:/usr/share/nginx/html
     networks:
       - reactory-network
 

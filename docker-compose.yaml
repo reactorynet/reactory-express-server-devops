@@ -147,12 +147,24 @@ services:
       - ${REACTORY_DATA}:/reactory/reactory-data
       - ${REACTORY_CLIENT}:/reactory/reactory-client
       - ${REACTORY_SERVER}/config/${REACTORY_CONFIG_ID:-reactory}/.env.${REACTORY_ENV_ID:-podman}:/reactory/reactory-express-server/.env
+      # Desktop-install only: exposes your real home folder through the
+      # CDNRouter [DESKTOP OVERRIDE] route (src/express/routes/CDNRouter.ts),
+      # which only actually serves it when IS_DESKTOP_INSTALL=true — this
+      # mount being present is harmless for anyone who leaves that flag
+      # unset/false. Set REACTORY_DESKTOP_HOME_PATH in your .env file to
+      # your host home directory (e.g. /Users/you) to use this; podman-
+      # compose doesn't support a nested ${VAR:-${HOME}} default, so there's
+      # no automatic fallback — if you don't want this mount at all, delete
+      # this line rather than leaving the variable unset.
+      - ${REACTORY_DESKTOP_HOME_PATH}:/reactory/desktop-home:ro
     environment:
       - REACTORY_HOME=/reactory
       - REACTORY_DATA=/reactory/reactory-data
       - REACTORY_SERVER=/reactory/reactory-express-server
       - REACTORY_CLIENT=/reactory/reactory-client
       - REACTORY_PLUGINS=/reactory/reactory-data/plugins
+      - REACTOR_HOME_PATH=/reactory/desktop-home
+      - HOME=/reactory/desktop-home
     networks:
       - reactory-network
 
@@ -161,9 +173,36 @@ services:
     pull_policy: never
     container_name: reactory-pwa-client
     ports:
-      - '9000:80'
+      - '${REACTORY_PWA_CLIENT_PORT:-9000}:80'
     volumes:
       - ${REACTORY_CLIENT}/build/reactory/${REACTORY_ENV_ID:-podman}:/usr/share/nginx/html
+    networks:
+      - reactory-network
+
+  reactory_reactor_client:
+    image: localhost/${REACTORY_CONFIG_ID:-reactory}/reactor-pwa-client:${BUILD_VERSION:-latest}
+    pull_policy: never
+    container_name: reactory-reactor-client
+    ports:
+      - '${REACTORY_REACTOR_CLIENT_PORT:-9002}:80'
+    volumes:
+      - ${REACTORY_CLIENT}/build/reactor/${REACTORY_ENV_ID:-podman}:/usr/share/nginx/html
+    networks:
+      - reactory-network
+
+  # Each client frontend is its own image + static build (see
+  # reactory-pwa-client/config/env/<client>/) sharing this one backend, so
+  # every additional client gets its own service block here with its own
+  # host port. Bump *_CLIENT_PORT in your env file if 9001 etc. collides
+  # with something else on your machine.
+  zepz_quotes_pwa_client:
+    image: localhost/reactory/zepz-quotes-pwa-client:${BUILD_VERSION:-latest}
+    pull_policy: never
+    container_name: zepz-quotes-pwa-client
+    ports:
+      - '${ZEPZ_QUOTES_PWA_CLIENT_PORT:-9001}:80'
+    volumes:
+      - ${REACTORY_CLIENT}/build/zepz-quotes/${REACTORY_ENV_ID:-podman}:/usr/share/nginx/html
     networks:
       - reactory-network
 

@@ -15,8 +15,8 @@ terraform {
 
 locals {
   repositories = {
-    "express-server" = "reactory/express-server"
-    "pwa-client"     = "reactory/pwa-client"
+    "express-server" = "${var.repository_prefix}/express-server"
+    "pwa-client"     = "${var.repository_prefix}/pwa-client"
   }
 }
 
@@ -60,12 +60,15 @@ resource "aws_ecr_lifecycle_policy" "reactory" {
       },
       {
         rulePriority = 2
-        description  = "Keep last ${var.max_image_count} tagged images"
+        description  = "Keep the last ${var.max_image_count} tagged images"
         selection = {
-          tagStatus     = "tagged"
-          tagPrefixList = ["v", "release", "latest"]
-          countType     = "imageCountMoreThan"
-          countNumber   = var.max_image_count
+          # tagStatus "any" rather than a tagPrefixList: Reactory images are
+          # tagged with a bare package.json version (1.1.0), which matches no
+          # prefix filter, so a prefix-based rule would silently never expire
+          # anything and tagged images would accumulate forever.
+          tagStatus   = "any"
+          countType   = "imageCountMoreThan"
+          countNumber = var.max_image_count
         }
         action = { type = "expire" }
       }

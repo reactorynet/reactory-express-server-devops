@@ -48,18 +48,18 @@ resource "aws_security_group" "rds" {
 }
 
 resource "aws_rds_cluster" "this" {
-  cluster_identifier      = "${var.cluster_name}-postgres"
-  engine                  = "aurora-postgresql"
-  engine_mode             = "provisioned"
-  engine_version          = var.engine_version
-  database_name           = var.database_name
-  master_username         = var.master_username
-  master_password         = var.master_password
-  db_subnet_group_name    = aws_db_subnet_group.this.name
-  vpc_security_group_ids  = [aws_security_group.rds.id]
-  storage_encrypted       = true
-  deletion_protection     = var.deletion_protection
-  skip_final_snapshot     = var.skip_final_snapshot
+  cluster_identifier        = "${var.cluster_name}-postgres"
+  engine                    = "aurora-postgresql"
+  engine_mode               = "provisioned"
+  engine_version            = var.engine_version
+  database_name             = var.database_name
+  master_username           = var.master_username
+  master_password           = var.master_password
+  db_subnet_group_name      = aws_db_subnet_group.this.name
+  vpc_security_group_ids    = [aws_security_group.rds.id]
+  storage_encrypted         = true
+  deletion_protection       = var.deletion_protection
+  skip_final_snapshot       = var.skip_final_snapshot
   final_snapshot_identifier = var.skip_final_snapshot ? null : "${var.cluster_name}-postgres-final"
 
   serverlessv2_scaling_configuration {

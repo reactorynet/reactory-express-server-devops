@@ -60,7 +60,7 @@ resource "helm_release" "kube_prometheus_stack" {
           type = "ClusterIP"
         }
         sidecar = {
-          dashboards = { enabled = true, label = "grafana_dashboard" }
+          dashboards  = { enabled = true, label = "grafana_dashboard" }
           datasources = { enabled = true }
         }
       }

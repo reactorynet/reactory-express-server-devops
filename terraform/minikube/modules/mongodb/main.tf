@@ -30,7 +30,7 @@ resource "kubernetes_persistent_volume" "mongodb_data" {
     persistent_volume_source {
       host_path {
         path = "/data/mongodb"
-      }      
+      }
     }
   }
 }
@@ -111,7 +111,7 @@ resource "kubernetes_service" "reactory_mongodb" {
     }
     port {
       port        = 27017
-      target_port = 27017      
+      target_port = 27017
     }
   }
 }

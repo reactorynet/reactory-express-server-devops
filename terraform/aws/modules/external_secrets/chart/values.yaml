@@ -1,0 +1,25 @@
+# All values are supplied by the Terraform secrets module via yamlencode().
+# The defaults here exist so `helm template` / `helm lint` work standalone.
+
+# External Secrets Operator API version. Chart 0.9.x serves v1beta1;
+# ESO >= 0.14 promoted the API to external-secrets.io/v1.
+esoApiVersion: external-secrets.io/v1beta1
+
+clusterSecretStore:
+  name: aws-secrets-manager
+  region: us-west-1
+  serviceAccount:
+    name: external-secrets
+    namespace: external-secrets
+
+# Each entry becomes one ExternalSecret plus the Kubernetes Secret it owns.
+#
+# externalSecrets:
+#   - name: mongo                     # ExternalSecret and target Secret name
+#     namespace: reactory
+#     remoteRef: reactory/dev/mongo   # Secrets Manager secret name
+#     refreshInterval: 1h
+#     data:
+#       - secretKey: password          # key inside the Kubernetes Secret
+#         property: password           # property inside the Secrets Manager JSON
+externalSecrets: []

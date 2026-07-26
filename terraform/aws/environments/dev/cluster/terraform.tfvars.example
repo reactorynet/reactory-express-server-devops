@@ -1,0 +1,29 @@
+# ---------------------------------------------------------------------------
+# dev / cluster — copy to terraform.tfvars (gitignored).
+# Secrets go in TF_VAR_* environment variables, never here.
+# ---------------------------------------------------------------------------
+
+aws_region  = "us-west-1"
+project     = "reactory"
+environment = "dev"
+
+kubernetes_version = "1.30"
+
+# Fine for a throwaway dev cluster; tighten for anything shared.
+api_allowed_cidrs = ["0.0.0.0/0"]
+
+node_instance_types = ["t3.medium", "t3.large"]
+node_desired_count  = 2
+node_max_count      = 4
+
+valkey_node_type = "cache.t4g.small"
+
+# --- Secrets: export before applying -------------------------------------
+#   export TF_VAR_mongo_username="reactory"
+#   export TF_VAR_mongo_password="..."
+#   export TF_VAR_postgres_username="reactory"
+#   export TF_VAR_postgres_password="..."
+#   export TF_VAR_valkey_auth_token="..."           # 16-128 chars, no / " @
+#   export TF_VAR_meilisearch_master_key="..."
+#   export TF_VAR_grafana_admin_password="..."
+#   export TF_VAR_app_secret_key="..."              # becomes SECRET_SAUCE

@@ -4,7 +4,7 @@ output "primary_endpoint" {
     var.mode != "serverless"
     ? (var.mode == "cluster"
       ? aws_elasticache_replication_group.this[0].configuration_endpoint_address
-      : aws_elasticache_replication_group.this[0].primary_endpoint_address)
+    : aws_elasticache_replication_group.this[0].primary_endpoint_address)
     : aws_elasticache_serverless_cache.this[0].endpoint[0].address
   )
 }

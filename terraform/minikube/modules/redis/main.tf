@@ -10,7 +10,7 @@ resource "kubernetes_persistent_volume" "redis_data" {
     persistent_volume_source {
       host_path {
         path = "/mnt/data/redis"
-      }      
+      }
     }
   }
 }
@@ -18,11 +18,11 @@ resource "kubernetes_persistent_volume" "redis_data" {
 variable "namespace" {
   description = "Namespace"
   type        = string
-  
+
 }
 
 variable "reactory_redis_password" {
-  type = string
+  type        = string
   description = "Reactory Redis Password"
 }
 
@@ -61,8 +61,8 @@ resource "kubernetes_deployment" "reactory_redis" {
       }
       spec {
         container {
-          name  = "redis"
-          image = "redis:latest"
+          name    = "redis"
+          image   = "redis:latest"
           command = ["redis-server", "--requirepass", var.reactory_redis_password]
           volume_mount {
             mount_path = "/data"

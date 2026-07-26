@@ -6,7 +6,7 @@ variable "reactory_grafana_admin_password" {
 variable "namespace" {
   description = "Namespace"
   type        = string
-  
+
 }
 
 variable "server_modules_root" {
@@ -87,8 +87,8 @@ resource "kubernetes_service" "reactory_grafana" {
     port {
       port        = 80
       target_port = 80
-      node_port = 30003
-      protocol = "TCP"
+      node_port   = 30003
+      protocol    = "TCP"
     }
     type = "NodePort"
   }

@@ -1,0 +1,42 @@
+# ---------------------------------------------------------------------------
+# production / cluster — copy to terraform.tfvars (gitignored).
+# ---------------------------------------------------------------------------
+
+aws_region  = "us-west-1"
+project     = "reactory"
+environment = "production"
+
+# Rehearse every version change in staging first.
+kubernetes_version = "1.30"
+
+# REQUIRED. Defaults to empty; an open production API server is not shipped as a
+# default. Set your office and CI egress ranges.
+api_allowed_cidrs = ["203.0.113.0/24"]
+
+node_instance_types = ["m6a.large", "m6i.large"]
+node_desired_count  = 2
+node_min_count      = 2
+node_max_count      = 8
+
+docdb_instance_class      = "db.r6g.large"
+rds_min_capacity          = 1
+rds_max_capacity          = 16
+valkey_node_type          = "cache.r7g.large"
+opensearch_instance_type  = "r6g.large.search"
+opensearch_volume_size_gb = 100
+
+backup_retention_days       = 14
+secret_recovery_window_days = 30
+
+postgres_database = "reactory"
+
+# --- Secrets: export before applying -------------------------------------
+#   export TF_VAR_mongo_username="reactory"
+#   export TF_VAR_mongo_password="..."
+#   export TF_VAR_postgres_username="reactory"
+#   export TF_VAR_postgres_password="..."
+#   export TF_VAR_valkey_auth_token="..."           # 16-128 chars, no / " @
+#   export TF_VAR_opensearch_username="reactory_admin"
+#   export TF_VAR_opensearch_password="..."         # upper, lower, digit, symbol
+#   export TF_VAR_grafana_admin_password="..."
+#   export TF_VAR_app_secret_key="..."

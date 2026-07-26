@@ -1,0 +1,30 @@
+# ---------------------------------------------------------------------------
+# dev / workload — copy to terraform.tfvars (gitignored).
+# Apply environments/dev/cluster first.
+# ---------------------------------------------------------------------------
+
+# Must match what the cluster layer was initialised with.
+state_bucket        = "reactory-terraform-state-CHANGEME"
+state_bucket_region = "us-west-1"
+
+# From `terraform -chdir=aws/bootstrap output`.
+ecr_express_server_url = "000000000000.dkr.ecr.us-west-1.amazonaws.com/reactory/express-server"
+ecr_pwa_client_url     = "000000000000.dkr.ecr.us-west-1.amazonaws.com/reactory/pwa-client"
+
+image_tag = "1.1.0"
+
+# Empty means plain HTTP on the generated ALB hostname.
+domain_name = ""
+
+# Only needed when domain_name is empty and a browser must reach the API:
+# read alb_dns_name from the outputs after the first apply, set it here, re-apply.
+# api_uri_root = "http://k8s-reactory-xxxx.us-west-1.elb.amazonaws.com"
+
+mongo_database    = "reactory-dev"
+postgres_database = "reactory"
+
+mongodb_image_tag  = "7.0.14"
+postgres_image_tag = "16.4"
+
+# --- Secrets --------------------------------------------------------------
+#   export TF_VAR_grafana_admin_password="..."

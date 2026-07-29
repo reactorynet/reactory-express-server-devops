@@ -1,0 +1,12 @@
+# ---------------------------------------------------------------------------
+# digitalocean/bootstrap — applied once per account.
+# ---------------------------------------------------------------------------
+
+# Must be globally unique across all of Spaces.
+state_bucket_name = "reactory-tfstate-CHANGEME"
+spaces_region     = "nyc3"
+
+# Required environment:
+#   export DIGITALOCEAN_TOKEN="dop_v1_..."
+#   export SPACES_ACCESS_KEY_ID="..."
+#   export SPACES_SECRET_ACCESS_KEY="..."

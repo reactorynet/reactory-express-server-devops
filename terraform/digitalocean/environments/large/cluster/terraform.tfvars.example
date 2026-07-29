@@ -1,0 +1,18 @@
+# ---------------------------------------------------------------------------
+# digitalocean / large / cluster — copy to terraform.tfvars (gitignored).
+#
+# Managed data services at this tier: PostgreSQL, MongoDB, Valkey and OpenSearch
+# ---------------------------------------------------------------------------
+
+project = "reactory"
+tier    = "large"
+region = "nyc3"
+
+# Required environment:
+#   export DIGITALOCEAN_TOKEN="..."
+#
+# State backend (Spaces):
+#   export TF_STATE_BUCKET=reactory-tfstate-CHANGEME
+#   export TF_STATE_ENDPOINT=https://nyc3.digitaloceanspaces.com
+#   export SPACES_ACCESS_KEY_ID=...
+#   export SPACES_SECRET_ACCESS_KEY=...

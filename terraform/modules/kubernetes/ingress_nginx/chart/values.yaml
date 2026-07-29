@@ -1,0 +1,11 @@
+# Supplied by the Terraform ingress_nginx module via yamlencode().
+# These defaults exist so `helm template` and `helm lint` work standalone.
+issuer:
+  name: letsencrypt
+  email: ""
+  # Staging endpoint by default: Let's Encrypt production has strict rate limits
+  # (5 duplicate certificates per week), and a misconfigured DNS record burns
+  # them quickly. The Terraform module overrides this per tier.
+  server: https://acme-staging-v02.api.letsencrypt.org/directory
+  privateKeyRef: letsencrypt-account-key
+  ingressClass: nginx

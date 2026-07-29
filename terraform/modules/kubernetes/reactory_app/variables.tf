@@ -41,6 +41,17 @@ variable "image_pull_policy" {
   }
 }
 
+variable "image_pull_secrets" {
+  description = <<-EOT
+    Names of docker-registry Secrets used to pull the images. Needed for a
+    private registry — a private GHCR repository on DigitalOcean or Linode.
+    Not needed for ECR, where the node role grants pull access, or for public
+    images.
+  EOT
+  type        = list(string)
+  default     = []
+}
+
 # ---------------------------------------------------------------------------
 # Sizing
 # ---------------------------------------------------------------------------
@@ -90,6 +101,21 @@ variable "enable_topology_spread" {
   EOT
   type        = bool
   default     = false
+}
+
+variable "wait_for_rollout" {
+  description = <<-EOT
+    Block the apply until the Deployment finishes rolling out.
+
+    True is right for a cloud environment: a failed rollout should fail the
+    apply rather than report success over a broken deployment.
+
+    False suits local experimentation, where the images are side-loaded and an
+    apply run before they exist would otherwise sit in ImagePullBackOff until
+    the provider's 10-minute timeout expires.
+  EOT
+  type        = bool
+  default     = true
 }
 
 variable "rolling_update" {
@@ -253,19 +279,27 @@ variable "ca_bundle_url" {
 # ---------------------------------------------------------------------------
 variable "ingress" {
   description = <<-EOT
-    ALB ingress. When certificate_arn is set the listener adds HTTPS and
-    redirects 80 -> 443; otherwise it serves plain HTTP on the ALB hostname.
+    Ingress routing. Deliberately controller-agnostic: this module owns the
+    rules — /api to the server, everything else to the client — while the
+    caller supplies whatever annotations its controller needs.
+
+    Annotations are not built here because they are entirely
+    controller-specific: AWS wants alb.ingress.kubernetes.io/*, ingress-nginx on
+    DigitalOcean and Linode wants nginx.ingress.kubernetes.io/*. Each workload
+    layer composes its own set and passes it in.
+
+    tls_secret_name enables a TLS block on the Ingress. With cert-manager, name
+    the Secret it will populate and add the cert-manager.io/cluster-issuer
+    annotation; with AWS the certificate lives on the ALB instead and this stays
+    null.
   EOT
   type = object({
-    enabled           = optional(bool, true)
-    class_name        = optional(string, "alb")
-    scheme            = optional(string, "internet-facing")
-    domain_name       = optional(string, "")
-    certificate_arn   = optional(string)
-    group_name        = optional(string)
-    healthcheck_path  = optional(string, "/health")
-    api_path_prefix   = optional(string, "/api")
-    extra_annotations = optional(map(string), {})
+    enabled         = optional(bool, true)
+    class_name      = optional(string, "nginx")
+    domain_name     = optional(string, "")
+    annotations     = optional(map(string), {})
+    api_path_prefix = optional(string, "/api")
+    tls_secret_name = optional(string)
   })
   default = {}
 }

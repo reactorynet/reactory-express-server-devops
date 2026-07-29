@@ -58,6 +58,26 @@ locals {
   docdb_ca_file = "/etc/ssl/docdb/global-bundle.pem"
 
   api_uri_root = var.domain_name != "" ? "https://${var.domain_name}" : var.api_uri_root
+
+  # ALB annotations. The AWS Load Balancer Controller reads these off the
+  # Ingress; without a certificate it serves plain HTTP on the generated ALB
+  # hostname.
+  alb_annotations = merge(
+    {
+      "alb.ingress.kubernetes.io/scheme"                   = "internet-facing"
+      "alb.ingress.kubernetes.io/target-type"              = "ip"
+      "alb.ingress.kubernetes.io/healthcheck-path"         = "/health"
+      "alb.ingress.kubernetes.io/group.name"               = local.cluster.cluster_name
+      "alb.ingress.kubernetes.io/load-balancer-attributes" = "idle_timeout.timeout_seconds=60,routing.http2.enabled=true"
+    },
+    module.alb_ingress.acm_certificate_arn != null ? {
+      "alb.ingress.kubernetes.io/listen-ports"    = jsonencode([{ HTTP = 80 }, { HTTPS = 443 }])
+      "alb.ingress.kubernetes.io/ssl-redirect"    = "443"
+      "alb.ingress.kubernetes.io/certificate-arn" = module.alb_ingress.acm_certificate_arn
+      } : {
+      "alb.ingress.kubernetes.io/listen-ports" = jsonencode([{ HTTP = 80 }])
+    },
+  )
 }
 
 provider "aws" {
@@ -160,7 +180,7 @@ module "alb_ingress" {
 }
 
 module "observability" {
-  source = "../../../modules/observability"
+  source = "../../../../modules/kubernetes/observability"
 
   grafana_admin_password  = var.grafana_admin_password
   storage_class           = kubernetes_storage_class.gp3.metadata[0].name
@@ -175,7 +195,7 @@ module "observability" {
 # Application
 # ---------------------------------------------------------------------------
 module "reactory_app" {
-  source = "../../../modules/reactory_app"
+  source = "../../../../modules/kubernetes/reactory_app"
 
   namespace   = kubernetes_namespace.reactory.metadata[0].name
   environment = local.cluster.environment
@@ -243,14 +263,14 @@ module "reactory_app" {
     secret_name = module.external_secrets.kubernetes_secret_names["app"]
   }
 
+  # ALB annotations are composed here rather than in reactory_app: the module is
+  # shared with the DigitalOcean and Linode blueprints, which run ingress-nginx
+  # and need an entirely different annotation set.
   ingress = {
-    enabled         = true
-    domain_name     = var.domain_name
-    certificate_arn = module.alb_ingress.acm_certificate_arn
-    group_name      = local.cluster.cluster_name
-    extra_annotations = {
-      "alb.ingress.kubernetes.io/load-balancer-attributes" = "idle_timeout.timeout_seconds=60,routing.http2.enabled=true"
-    }
+    enabled     = true
+    class_name  = "alb"
+    domain_name = var.domain_name
+    annotations = local.alb_annotations
   }
 
   labels = { "reactory.io/layer" = "workload" }

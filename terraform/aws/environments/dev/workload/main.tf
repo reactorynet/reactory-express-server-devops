@@ -67,6 +67,25 @@ locals {
   postgres_host    = "postgres.${local.namespace}.svc.cluster.local"
   meilisearch_host = "http://meilisearch.${local.namespace}.svc.cluster.local:7700"
 
+  # ALB annotations. The AWS Load Balancer Controller reads these off the
+  # Ingress; without a certificate it serves plain HTTP on the generated ALB
+  # hostname.
+  alb_annotations = merge(
+    {
+      "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
+      "alb.ingress.kubernetes.io/target-type"      = "ip"
+      "alb.ingress.kubernetes.io/healthcheck-path" = "/health"
+      "alb.ingress.kubernetes.io/group.name"       = local.cluster.cluster_name
+    },
+    module.alb_ingress.acm_certificate_arn != null ? {
+      "alb.ingress.kubernetes.io/listen-ports"    = jsonencode([{ HTTP = 80 }, { HTTPS = 443 }])
+      "alb.ingress.kubernetes.io/ssl-redirect"    = "443"
+      "alb.ingress.kubernetes.io/certificate-arn" = module.alb_ingress.acm_certificate_arn
+      } : {
+      "alb.ingress.kubernetes.io/listen-ports" = jsonencode([{ HTTP = 80 }])
+    },
+  )
+
   # Without a domain the ALB hostname is unknown until after apply, so
   # api_uri_root can be supplied explicitly on a second pass.
   api_uri_root = (
@@ -161,7 +180,7 @@ module "external_secrets" {
 # Staging and production use DocumentDB and Aurora instead.
 # ---------------------------------------------------------------------------
 module "mongodb" {
-  source = "../../../modules/mongodb_selfhosted"
+  source = "../../../../modules/kubernetes/mongodb_selfhosted"
 
   namespace     = kubernetes_namespace.reactory.metadata[0].name
   secret_name   = module.external_secrets.kubernetes_secret_names["mongo"]
@@ -174,7 +193,7 @@ module "mongodb" {
 }
 
 module "postgres" {
-  source = "../../../modules/postgres_selfhosted"
+  source = "../../../../modules/kubernetes/postgres_selfhosted"
 
   namespace     = kubernetes_namespace.reactory.metadata[0].name
   secret_name   = module.external_secrets.kubernetes_secret_names["postgres"]
@@ -187,7 +206,7 @@ module "postgres" {
 }
 
 module "meilisearch" {
-  source = "../../../modules/meilisearch"
+  source = "../../../../modules/kubernetes/meilisearch"
 
   namespace              = kubernetes_namespace.reactory.metadata[0].name
   master_key_secret_name = module.external_secrets.kubernetes_secret_names["meili"]
@@ -215,7 +234,7 @@ module "alb_ingress" {
 }
 
 module "observability" {
-  source = "../../../modules/observability"
+  source = "../../../../modules/kubernetes/observability"
 
   grafana_admin_password  = var.grafana_admin_password
   storage_class           = kubernetes_storage_class.gp3.metadata[0].name
@@ -230,7 +249,7 @@ module "observability" {
 # Application
 # ---------------------------------------------------------------------------
 module "reactory_app" {
-  source = "../../../modules/reactory_app"
+  source = "../../../../modules/kubernetes/reactory_app"
 
   namespace   = kubernetes_namespace.reactory.metadata[0].name
   environment = local.cluster.environment
@@ -285,11 +304,14 @@ module "reactory_app" {
     secret_name = module.external_secrets.kubernetes_secret_names["app"]
   }
 
+  # ALB annotations are composed here rather than in reactory_app: the module is
+  # shared with the DigitalOcean and Linode blueprints, which run ingress-nginx
+  # and need an entirely different annotation set.
   ingress = {
-    enabled         = true
-    domain_name     = var.domain_name
-    certificate_arn = module.alb_ingress.acm_certificate_arn
-    group_name      = local.cluster.cluster_name
+    enabled     = true
+    class_name  = "alb"
+    domain_name = var.domain_name
+    annotations = local.alb_annotations
   }
 
   labels = { "reactory.io/layer" = "workload" }

@@ -1,19 +1,58 @@
 # Reactory Terraform
 
-Infrastructure-as-code for deploying the Reactory platform on AWS, plus a local
-minikube setup. Terraform >= 1.8.0.
+Infrastructure-as-code for deploying the Reactory platform on AWS, DigitalOcean
+and Linode, plus a local minikube setup. Terraform >= 1.8.0.
+
+## Choosing a cloud
+
+| | AWS | DigitalOcean | Linode |
+|---|---|---|---|
+| Environments | dev, staging, production | small, medium, large | small, medium, large |
+| PostgreSQL | Aurora Serverless v2 | Managed `pg` | Managed PostgreSQL |
+| MongoDB | DocumentDB | Managed `mongodb` | **pod only** |
+| Valkey | ElastiCache | Managed `valkey` | **pod only** |
+| Search | OpenSearch Service | Managed `opensearch` | **Meilisearch pod only** |
+| Secrets | Secrets Manager + ESO | Kubernetes Secrets in state | Kubernetes Secrets in state |
+| State locking | DynamoDB | none | none |
+| Registry | ECR | GHCR | GHCR |
+
+**Linode has no managed MongoDB, Redis or search** — verified against the
+provider, not the marketing pages. Reactory's primary datastore is MongoDB, so a
+large Linode deployment runs it as a single pod with no managed failover or
+backup. See `linode/readme.md` before choosing it for production; DigitalOcean
+covers the whole stack and is the better non-AWS production target.
 
 ## Architecture
 
-Three layers, applied in order. Each is a separate Terraform state.
+Three layers, applied in order. Each is a separate Terraform state. Every cloud
+uses the same shape.
 
 ```
 terraform/
+  modules/
+    kubernetes/                # CLOUD-NEUTRAL — used by every cloud
+      reactory_app/            #   express-server + pwa-client, Services, HPA,
+                               #   PDB, Ingress, and the app's env contract
+      app_secrets/             #   native Secrets (DigitalOcean, Linode)
+      ingress_nginx/           #   ingress-nginx + cert-manager + ClusterIssuer
+        chart/
+      mongodb_selfhosted/      #   non-production data services
+      postgres_selfhosted/
+      valkey_selfhosted/
+      meilisearch/
+      observability/           #   kube-prometheus-stack + Jaeger
+    digitalocean/
+      doks/                    #   cluster + VPC + node pool
+      database/                #   any managed engine, + firewall
+    linode/
+      lke/
+      database/                #   PostgreSQL (the only engine Linode offers)
+
   aws/
     bootstrap/                 # LAYER 1 — account-level, applied once
                                #   S3 state bucket, DynamoDB lock table,
                                #   shared ECR registry
-    modules/
+    modules/                   # AWS-specific
       # AWS infrastructure
       vpc/                     # VPC, subnets, NAT gateways, route tables
       eks/                     # cluster, node groups, IRSA OIDC, add-ons
@@ -23,29 +62,38 @@ terraform/
       elasticache_valkey/      # ElastiCache for Valkey
       opensearch/              # Amazon OpenSearch Service
       secrets_manager/         # Secrets Manager entries + ESO's IRSA role
-      # Kubernetes
-      reactory_app/            # express-server + pwa-client, Services,
-                               #   HPA, PDB, Ingress — and the app's
-                               #   environment contract
       external_secrets/        # ESO + ClusterSecretStore + ExternalSecrets
         chart/                 #   local Helm chart carrying the custom resources
-      meilisearch/             # self-hosted search (dev)
-      mongodb_selfhosted/      # non-production MongoDB pod
-      postgres_selfhosted/     # non-production PostgreSQL pod
       alb_ingress/             # AWS Load Balancer Controller + ACM
-      observability/           # kube-prometheus-stack + Jaeger
     environments/
       dev/
-        cluster/               # LAYER 2 — AWS: VPC, EKS, Valkey, secrets
+        cluster/               # LAYER 2 — cloud resources
         workload/              # LAYER 3 — Kubernetes objects + the app
-      staging/
-        cluster/
-        workload/
-      production/
-        cluster/
-        workload/
+      staging/{cluster,workload}
+      production/{cluster,workload}
+
+  digitalocean/
+    bootstrap/                 # Spaces bucket for state
+    environments/
+      small/{cluster,workload}
+      medium/{cluster,workload}
+      large/{cluster,workload}
+
+  linode/
+    bootstrap/                 # Object Storage bucket for state
+    environments/
+      small/{cluster,workload}
+      medium/{cluster,workload}
+      large/{cluster,workload}
+
   minikube/                    # local development, self-contained
 ```
+
+`modules/kubernetes/reactory_app` is the reason the clouds stay consistent: it
+speaks only the Kubernetes API and owns the application's environment contract,
+so all nine environments across three clouds compose the same code. Anything
+provider-specific — ALB versus ingress-nginx annotations, managed versus
+in-cluster endpoints — arrives through variables.
 
 ### Why the cluster/workload split
 
@@ -148,7 +196,7 @@ bin/terraform.sh apply --target=dev/cluster  --reactory-env=dev
 bin/terraform.sh apply --target=dev/workload --reactory-env=dev --image-tag=1.1.0
 ```
 
-`bin/terraform.sh --list` shows every target. Or use the build pipeline, which
+``bin/terraform.sh --list` shows every target. Or use the build pipeline, which
 builds, pushes and applies:
 
 ```bash

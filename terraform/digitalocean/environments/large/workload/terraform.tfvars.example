@@ -1,0 +1,30 @@
+# ---------------------------------------------------------------------------
+# digitalocean / large / workload — copy to terraform.tfvars (gitignored).
+# Apply digitalocean/environments/large/cluster first.
+# ---------------------------------------------------------------------------
+
+# Must match what the cluster layer was initialised with.
+state_bucket   = "reactory-tfstate-CHANGEME"
+state_endpoint = "https://nyc3.digitaloceanspaces.com"
+
+# Images come from GHCR — one registry across every cloud, so a tag built once
+# is promoted rather than rebuilt.
+image_registry       = "ghcr.io"
+express_server_image = "reactorynet/reactory-express-server"
+pwa_client_image     = "reactorynet/reactory-pwa-client"
+image_tag            = "1.1.0"
+
+# Private GHCR repository? Supply pull credentials:
+# registry_auth = {
+#   server   = "ghcr.io"
+#   username = "your-github-user"
+#   password = "ghp_...      # PAT with read:packages"
+# }
+
+domain_name = "large.example.com"
+enable_tls  = true
+acme_email  = "ops@example.com"
+
+# --- Secrets: export before applying ---------------------------------------
+#   export TF_VAR_app_secret_key="..."
+#   export TF_VAR_grafana_admin_password="..."

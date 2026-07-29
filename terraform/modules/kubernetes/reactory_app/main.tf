@@ -2,11 +2,16 @@
 # module: reactory_app
 #
 # The Reactory workloads — express-server and pwa-client — with their Services,
-# optional HPAs and PDBs, and the shared ALB Ingress.
+# optional HPAs and PDBs, and the shared Ingress.
+#
+# Cloud-agnostic: it speaks only the Kubernetes API, so AWS, DigitalOcean,
+# Linode and minikube all compose this same module. Anything provider-specific
+# — ALB versus ingress-nginx annotations, managed versus in-cluster database
+# endpoints — arrives through variables.
 #
 # This module owns the application's environment contract. Every blueprint
-# composes it from the same code, so dev, staging and production cannot drift
-# apart on variable names. The names here are verifiable in the server source:
+# composes it from the same code, so no environment on any cloud can drift on
+# variable names. The names here are verifiable in the server source:
 #
 #   MONGOOSE                 src/models/mongoose/index.ts, src/constants/index.ts
 #   REACTORY_POSTGRES_*      src/database/postgres/ConnectionFactory.ts
@@ -117,8 +122,10 @@ locals {
     { name = "REACTORY_REDIS_PORT", value = tostring(var.redis.port), secret_name = null, secret_key = null },
     { name = "REACTORY_REDIS_DB", value = tostring(var.redis.db), secret_name = null, secret_key = null },
     { name = "REACTORY_REDIS_PASSWORD", value = null, secret_name = var.redis.secret_name, secret_key = var.redis.password_key },
-    # ElastiCache mandates transit encryption whenever an AUTH token is set.
-    # See readme.md "Known gaps" — the Redis client does not honour this yet.
+    # Managed Redis-compatible services generally mandate TLS once an AUTH
+    # token is set (ElastiCache and DigitalOcean Valkey both do); an in-cluster
+    # valkey_selfhosted pod does not offer it. The caller sets redis.tls to
+    # match. See readme.md "Known gaps" — the client does not honour this yet.
     { name = "REACTORY_REDIS_TLS", value = tostring(var.redis.tls), secret_name = null, secret_key = null },
   ]
 
@@ -155,27 +162,16 @@ locals {
   )
 
   # -------------------------------------------------------------------------
-  # Ingress annotations
+  # Ingress
+  #
+  # Annotations come from the caller — see the variable docs for why. A TLS
+  # block is emitted only when both a hostname and a Secret name are present,
+  # since a TLS entry without a host matches nothing.
   # -------------------------------------------------------------------------
-  tls_enabled = var.ingress.certificate_arn != null && var.ingress.certificate_arn != ""
-
-  ingress_annotations = merge(
-    {
-      "alb.ingress.kubernetes.io/scheme"           = var.ingress.scheme
-      "alb.ingress.kubernetes.io/target-type"      = "ip"
-      "alb.ingress.kubernetes.io/healthcheck-path" = var.ingress.healthcheck_path
-    },
-    var.ingress.group_name != null ? {
-      "alb.ingress.kubernetes.io/group.name" = var.ingress.group_name
-    } : {},
-    local.tls_enabled ? {
-      "alb.ingress.kubernetes.io/listen-ports"    = jsonencode([{ HTTP = 80 }, { HTTPS = 443 }])
-      "alb.ingress.kubernetes.io/ssl-redirect"    = "443"
-      "alb.ingress.kubernetes.io/certificate-arn" = var.ingress.certificate_arn
-      } : {
-      "alb.ingress.kubernetes.io/listen-ports" = jsonencode([{ HTTP = 80 }])
-    },
-    var.ingress.extra_annotations,
+  ingress_tls_enabled = (
+    var.ingress.tls_secret_name != null &&
+    var.ingress.tls_secret_name != "" &&
+    var.ingress.domain_name != ""
   )
 }
 
@@ -188,6 +184,8 @@ resource "kubernetes_deployment" "express_server" {
     namespace = var.namespace
     labels    = local.server_labels
   }
+
+  wait_for_rollout = var.wait_for_rollout
 
   spec {
     replicas = var.express_server.replicas
@@ -215,6 +213,13 @@ resource "kubernetes_deployment" "express_server" {
       }
 
       spec {
+        dynamic "image_pull_secrets" {
+          for_each = var.image_pull_secrets
+          content {
+            name = image_pull_secrets.value
+          }
+        }
+
         dynamic "topology_spread_constraint" {
           for_each = var.enable_topology_spread ? [1] : []
           content {
@@ -422,6 +427,8 @@ resource "kubernetes_deployment" "pwa_client" {
     labels    = local.client_labels
   }
 
+  wait_for_rollout = var.wait_for_rollout
+
   spec {
     replicas = var.pwa_client.replicas
 
@@ -443,6 +450,13 @@ resource "kubernetes_deployment" "pwa_client" {
       }
 
       spec {
+        dynamic "image_pull_secrets" {
+          for_each = var.image_pull_secrets
+          content {
+            name = image_pull_secrets.value
+          }
+        }
+
         dynamic "topology_spread_constraint" {
           for_each = var.enable_topology_spread ? [1] : []
           content {
@@ -575,13 +589,22 @@ resource "kubernetes_ingress_v1" "reactory" {
     name        = "reactory-ingress"
     namespace   = var.namespace
     labels      = local.common_labels
-    annotations = local.ingress_annotations
+    annotations = var.ingress.annotations
   }
 
   spec {
     # ingressClassName replaces the deprecated kubernetes.io/ingress.class
-    # annotation, which the AWS Load Balancer Controller no longer honours.
+    # annotation, which neither the AWS Load Balancer Controller nor recent
+    # ingress-nginx releases honour any more.
     ingress_class_name = var.ingress.class_name
+
+    dynamic "tls" {
+      for_each = local.ingress_tls_enabled ? [1] : []
+      content {
+        hosts       = [var.ingress.domain_name]
+        secret_name = var.ingress.tls_secret_name
+      }
+    }
 
     rule {
       host = var.ingress.domain_name != "" ? var.ingress.domain_name : null

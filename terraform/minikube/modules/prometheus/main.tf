@@ -1,6 +1,6 @@
 variable "namespace" {
   description = "Namespace"
-  type        = string  
+  type        = string
 }
 
 variable "server_modules_root" {
@@ -34,7 +34,7 @@ resource "kubernetes_deployment" "reactory_prometheus" {
           volume_mount {
             mount_path = "/etc/prometheus"
             name       = "prometheus-config"
-          }        
+          }
         }
         volume {
           name = "prometheus-config"
@@ -60,7 +60,7 @@ resource "kubernetes_service" "reactory_prometheus" {
     port {
       port        = 9090
       target_port = 9090
-      node_port = 30090
+      node_port   = 30090
     }
   }
 }

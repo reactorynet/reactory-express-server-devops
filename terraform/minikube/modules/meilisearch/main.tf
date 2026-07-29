@@ -6,7 +6,7 @@ variable "meilisearch_master_key" {
 variable "namespace" {
   description = "Namespace"
   type        = string
-  
+
 }
 
 
@@ -97,7 +97,7 @@ resource "kubernetes_service" "reactory_meilisearch" {
     port {
       port        = 7700
       target_port = 7700
-      node_port = 30006
+      node_port   = 30006
     }
   }
 }

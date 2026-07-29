@@ -1,0 +1,16 @@
+# ---------------------------------------------------------------------------
+# aws/bootstrap — account-level, applied once.
+# Copy to terraform.tfvars. Contains no secrets, but tfvars is gitignored.
+# ---------------------------------------------------------------------------
+
+aws_region = "us-west-1"
+project    = "reactory"
+
+# Must be globally unique across all of S3.
+state_bucket_name = "reactory-terraform-state-CHANGEME"
+lock_table_name   = "reactory-terraform-lock"
+
+# Shared registry. Every environment pulls from these repositories, so retain
+# enough history to roll production back past whatever dev has pushed since.
+ecr_repository_prefix = "reactory"
+ecr_max_image_count   = 50

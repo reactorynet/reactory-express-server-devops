@@ -1,6 +1,6 @@
 variable "namespace" {
   description = "Namespace"
-  type        = string  
+  type        = string
 }
 
 variable "server_root_path" {
@@ -33,44 +33,44 @@ resource "kubernetes_deployment" "reactory_express_server" {
       }
       spec {
         container {
-          name  = "reactory-express-server"
-          image = "localhost/reactory/reactory-express-server:1.1.0"
+          name    = "reactory-express-server"
+          image   = "localhost/reactory/reactory-express-server:1.1.0"
           command = ["/bin/sh"]
-          args = [ "-c", "bin/run-otel.sh" ]
+          args    = ["-c", "bin/run-otel.sh"]
           env {
-            name = "REACTORY_HOME"
+            name  = "REACTORY_HOME"
             value = "/reactory"
           }
           env {
-            name = "REACTORY_DATA"
+            name  = "REACTORY_DATA"
             value = "/reactory/reactory-data"
           }
           env {
-            name = "REACTORY_SERVER" 
+            name  = "REACTORY_SERVER"
             value = "/reactory/reactory-express-server"
           }
           env {
-            name = "REACTORY_CLIENT"
+            name  = "REACTORY_CLIENT"
             value = "/reactory/reactory-pwa-client"
           }
           env {
-            name = "REACTORY_PLUGINS"
+            name  = "REACTORY_PLUGINS"
             value = "/reactory/reactory-data/plugins"
           }
-          
+
           volume_mount {
-            name = "reactory-data-volume"
+            name       = "reactory-data-volume"
             mount_path = "/reactory/reactory-data"
           }
         }
-        
+
         volume {
           name = "reactory-data-volume"
           host_path {
             path = "/var/reactory"
             type = "Directory"
           }
-        }                
+        }
       }
     }
   }
@@ -88,8 +88,8 @@ resource "kubernetes_service" "reactory_express_server" {
     port {
       port        = 4000
       target_port = 4000
-      protocol = "TCP"
-      node_port = 30002
+      protocol    = "TCP"
+      node_port   = 30002
     }
     type = "NodePort"
   }

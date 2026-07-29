@@ -1,0 +1,13 @@
+# ---------------------------------------------------------------------------
+# linode/bootstrap — applied once per account.
+# ---------------------------------------------------------------------------
+
+state_bucket_name     = "reactory-tfstate-CHANGEME"
+object_storage_region = "us-ord-1"
+
+# Required environment:
+#   export LINODE_TOKEN="..."
+#
+# After apply, read the generated keys and export them for every other layer:
+#   export AWS_ACCESS_KEY_ID=$(terraform output -raw state_access_key)
+#   export AWS_SECRET_ACCESS_KEY=$(terraform output -raw state_secret_key)

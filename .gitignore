@@ -3,9 +3,10 @@
 .DS_Store
 !env.podman-sample
 !env.sample
-/terraform/**/*.tfstate
-/terraform/**/*.tfstate.backup
-/terraform/**/*.tfsvars
-/terraform/**/*.terraform.lock.hcl
-/terraform/minikube/.logs/*
-/terraform/minikube/.terraform/**
+# Terraform rules live in terraform/.gitignore so they sit next to what they
+# cover. The rules that used to be here are superseded by it, with two fixes:
+#   - `*.tfsvars` was a typo for `*.tfvars`, so it matched nothing — which is
+#     how terraform/minikube/terraform.tfvars came to be committed with
+#     credentials in it.
+#   - provider lock files are no longer ignored; Terraform expects
+#     .terraform.lock.hcl to be committed so provider versions are reproducible.

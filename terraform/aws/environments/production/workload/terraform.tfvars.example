@@ -1,0 +1,27 @@
+# ---------------------------------------------------------------------------
+# production / workload — copy to terraform.tfvars (gitignored).
+# Apply environments/production/cluster first.
+# ---------------------------------------------------------------------------
+
+state_bucket        = "reactory-terraform-state-CHANGEME"
+state_bucket_region = "us-west-1"
+
+ecr_express_server_url = "000000000000.dkr.ecr.us-west-1.amazonaws.com/reactory/express-server"
+ecr_pwa_client_url     = "000000000000.dkr.ecr.us-west-1.amazonaws.com/reactory/pwa-client"
+
+# The tag already applied and verified in staging.
+image_tag = "1.1.0"
+
+domain_name               = "app.example.com"
+subject_alternative_names = ["www.app.example.com"]
+
+express_server_replicas     = 2
+express_server_max_replicas = 8
+pwa_client_replicas         = 2
+pwa_client_max_replicas     = 6
+
+mongo_database    = "reactory"
+postgres_database = "reactory"
+
+# --- Secrets --------------------------------------------------------------
+#   export TF_VAR_grafana_admin_password="..."

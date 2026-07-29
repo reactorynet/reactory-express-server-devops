@@ -1,22 +1,22 @@
 variable "reactory_postgres_user" {
   description = "Postgres DB username"
-  type = string
+  type        = string
 }
 
 variable "reactory_postgres_db" {
   description = "Postgres DB name"
-  type = string
+  type        = string
 }
 
 variable "reactory_postgres_password" {
   description = "Postgres Password"
-  type = string
+  type        = string
 }
 
 variable "namespace" {
   description = "Namespace"
   type        = string
-  
+
 }
 
 resource "kubernetes_persistent_volume" "postgres_data" {
@@ -28,7 +28,7 @@ resource "kubernetes_persistent_volume" "postgres_data" {
       storage = "2Gi"
     }
     access_modes = ["ReadWriteOnce"]
-    persistent_volume_source {      
+    persistent_volume_source {
       host_path {
         path = "/mnt/data/postgres"
       }

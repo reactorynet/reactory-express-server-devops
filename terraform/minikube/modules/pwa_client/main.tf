@@ -46,8 +46,8 @@ resource "kubernetes_service" "reactory_pwa_client" {
     port {
       port        = 80
       target_port = 80
-      node_port = 30001
-      protocol = "TCP"
+      node_port   = 30001
+      protocol    = "TCP"
     }
     type = "NodePort"
   }

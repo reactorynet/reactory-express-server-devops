@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ .Values.issuer.name }}
+  labels:
+    app.kubernetes.io/managed-by: terraform
+    app.kubernetes.io/part-of: reactory
+spec:
+  acme:
+    server: {{ .Values.issuer.server }}
+    {{- if .Values.issuer.email }}
+    email: {{ .Values.issuer.email }}
+    {{- end }}
+    privateKeySecretRef:
+      name: {{ .Values.issuer.privateKeyRef }}
+    solvers:
+      - http01:
+          ingress:
+            class: {{ .Values.issuer.ingressClass }}

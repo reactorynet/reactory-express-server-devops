@@ -302,6 +302,22 @@ module "reactory_app" {
     annotations = merge(
       {
         "nginx.ingress.kubernetes.io/proxy-body-size" = "32m"
+
+        # Server-sent events. An SSE stream is a response that stays open for
+        # minutes or hours and can be silent for long stretches, which the
+        # defaults are actively hostile to:
+        #  - proxy-read-timeout defaults to 60s, so nginx closes any stream it
+        #    has seen no traffic on for a minute. The server sends a keepalive
+        #    comment every 25s (REACTORY_STREAMING_HEARTBEAT_MS), so 60s would
+        #    mostly hold — but a slow tool call or a paused worker overruns it
+        #    and every stream reconnects. One hour is comfortably clear of that.
+        #  - proxy-buffering would hold the response until a buffer filled,
+        #    turning a token stream into one delayed dump. The server also sets
+        #    X-Accel-Buffering: no per response; this covers the ingress-wide
+        #    default so the two cannot disagree.
+        "nginx.ingress.kubernetes.io/proxy-read-timeout" = "3600"
+        "nginx.ingress.kubernetes.io/proxy-send-timeout" = "3600"
+        "nginx.ingress.kubernetes.io/proxy-buffering"    = "off"
       },
       local.tls_enabled ? {
         "cert-manager.io/cluster-issuer"                 = module.ingress_nginx.cluster_issuer_name

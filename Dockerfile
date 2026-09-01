@@ -55,12 +55,15 @@ RUN update-ca-certificates && \
 RUN apt-get update -y && \
 	apt-get -y install \
 	build-essential \
+	pkg-config \
+	python3 \
 	chromium \
 	libcairo2-dev \
 	libgif-dev \
 	libjpeg-dev \
 	libpango1.0-dev \
-	librsvg2-dev && \
+	librsvg2-dev \
+	libvips-dev && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 

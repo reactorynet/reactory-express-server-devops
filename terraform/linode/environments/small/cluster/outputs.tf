@@ -27,11 +27,13 @@ output "cluster_name" {
 }
 
 output "cluster_endpoint" {
-  value = module.lke.endpoint
+  value     = module.lke.endpoint
+  sensitive = true
 }
 
 output "cluster_ca_certificate" {
-  value = module.lke.cluster_ca_certificate
+  value     = module.lke.cluster_ca_certificate
+  sensitive = true
 }
 
 output "cluster_token" {

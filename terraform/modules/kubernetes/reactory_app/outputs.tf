@@ -13,14 +13,27 @@ output "express_server_endpoint" {
   value       = "http://${kubernetes_service.express_server.metadata[0].name}.${var.namespace}.svc.cluster.local:${var.api_port}"
 }
 
+output "web_domain" {
+  description = "Resolved Web Client public domain"
+  value       = local.web_domain
+}
+
+output "api_domain" {
+  description = "Resolved API Backend public domain"
+  value       = local.api_domain
+}
+
+output "is_dual_domain" {
+  description = "Whether dual-domain topology is active"
+  value       = local.is_dual_domain
+}
+
 output "alb_hostname" {
   description = <<-EOT
-    ALB hostname taken from the Ingress status. The AWS Load Balancer Controller
-    provisions the ALB in response to the Ingress, so this is empty on the apply
-    that creates it and populated on the next refresh.
+    ALB hostname taken from the Ingress status if provisioned via AWS Load Balancer Controller.
   EOT
   value = try(
-    kubernetes_ingress_v1.reactory[0].status[0].load_balancer[0].ingress[0].hostname,
+    local.is_dual_domain ? kubernetes_ingress_v1.api[0].status[0].load_balancer[0].ingress[0].hostname : kubernetes_ingress_v1.reactory[0].status[0].load_balancer[0].ingress[0].hostname,
     null
   )
 }

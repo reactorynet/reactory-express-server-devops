@@ -9,11 +9,13 @@ output "cluster_name" {
 output "endpoint" {
   description = "Kubernetes API endpoint, parsed out of the kubeconfig"
   value       = local.cluster_endpoint
+  sensitive   = true
 }
 
 output "cluster_ca_certificate" {
   description = "Base64-encoded cluster CA. Public certificate, not sensitive."
   value       = local.cluster_ca_certificate
+  sensitive   = true
 }
 
 output "cluster_token" {

@@ -2,29 +2,12 @@
 # module: reactory_app
 #
 # The Reactory workloads — express-server and pwa-client — with their Services,
-# optional HPAs and PDBs, and the shared Ingress.
+# optional HPAs and PDBs, and Dual-Domain Ingress (Web *-web.* and API *-api.*).
 #
 # Cloud-agnostic: it speaks only the Kubernetes API, so AWS, DigitalOcean,
 # Linode and minikube all compose this same module. Anything provider-specific
 # — ALB versus ingress-nginx annotations, managed versus in-cluster database
 # endpoints — arrives through variables.
-#
-# This module owns the application's environment contract. Every blueprint
-# composes it from the same code, so no environment on any cloud can drift on
-# variable names. The names here are verifiable in the server source:
-#
-#   MONGOOSE                 src/models/mongoose/index.ts, src/constants/index.ts
-#   REACTORY_POSTGRES_*      src/database/postgres/ConnectionFactory.ts
-#   REACTORY_REDIS_*         src/modules/reactory-core/services/RedisService.ts
-#   MEILISEARCH_*            services/search/providers/MeiliSearchProvider.ts
-#   ELASTICSEARCH_*          services/search/providers/ElasticSearchProvider.ts
-#   REACTORY_SEARCH_PROVIDER services/ReactorySearchService.ts
-#   SECRET_SAUCE             src/express/middleware/ReactorySession.ts
-#   API_PORT / API_URI_ROOT  src/express/server.ts
-#
-# SERVER_IP is deliberately never set: server.ts passes it straight to
-# httpServer.listen(), and leaving it unset binds to all interfaces, which is
-# what probes and Services require.
 # ---------------------------------------------------------------------------
 
 terraform {
@@ -55,11 +38,22 @@ locals {
   ca_dir          = local.needs_ca_bundle ? dirname(var.mongo.ca_file) : ""
 
   # -------------------------------------------------------------------------
+  # Hostname & Dual-Domain Topology Resolution
+  # -------------------------------------------------------------------------
+  web_domain = var.ingress.web_domain_name != "" ? var.ingress.web_domain_name : (var.ingress.domain_name != "" ? var.ingress.domain_name : "")
+  api_domain = var.ingress.api_domain_name != "" ? var.ingress.api_domain_name : (var.ingress.domain_name != "" ? var.ingress.domain_name : "")
+
+  is_dual_domain = (
+    var.ingress.web_domain_name != "" &&
+    var.ingress.api_domain_name != "" &&
+    var.ingress.web_domain_name != var.ingress.api_domain_name
+  )
+
+  api_url = local.api_domain != "" ? "https://${local.api_domain}" : var.api_uri_root
+  web_url = local.web_domain != "" ? "https://${local.web_domain}" : var.api_uri_root
+
+  # -------------------------------------------------------------------------
   # MONGOOSE connection string.
-  #
-  # $(MONGO_USER)/$(MONGO_PASSWORD) are expanded by the kubelet, so the
-  # credentials never appear in the pod spec. This only works because both are
-  # declared before MONGOOSE in the env list below.
   # -------------------------------------------------------------------------
   mongo_query = join("", concat(
     ["?authSource=${var.mongo.auth_source}"],
@@ -77,19 +71,12 @@ locals {
 
   # -------------------------------------------------------------------------
   # Environment list.
-  #
-  # ORDER IS SIGNIFICANT. Kubernetes expands $(VAR) references only against
-  # variables declared EARLIER in the same list, and the provider models `env`
-  # as an ordered list, so this sequence is preserved verbatim. MONGO_USER and
-  # MONGO_PASSWORD must precede MONGOOSE.
-  #
-  # Every entry carries the same four attributes so the list has a single
-  # unifiable type: `value` for literals, `secret_name`/`secret_key` for
-  # Secret-backed values.
   # -------------------------------------------------------------------------
   env_paths = [
     { name = "REACTORY_HOME", value = var.reactory_paths.home, secret_name = null, secret_key = null },
     { name = "REACTORY_DATA", value = var.reactory_paths.data, secret_name = null, secret_key = null },
+    { name = "APP_DATA_ROOT", value = var.reactory_paths.data, secret_name = null, secret_key = null },
+    { name = "APPLICATION_ROOT", value = "app", secret_name = null, secret_key = null },
     { name = "REACTORY_SERVER", value = var.reactory_paths.server, secret_name = null, secret_key = null },
     { name = "REACTORY_CLIENT", value = var.reactory_paths.client, secret_name = null, secret_key = null },
     { name = "REACTORY_PLUGINS", value = var.reactory_paths.plugins, secret_name = null, secret_key = null },
@@ -99,8 +86,14 @@ locals {
     { name = "NODE_ENV", value = var.node_env, secret_name = null, secret_key = null },
     { name = "MODE", value = var.node_env, secret_name = null, secret_key = null },
     { name = "API_PORT", value = tostring(var.api_port), secret_name = null, secret_key = null },
-    { name = "API_URI_ROOT", value = var.api_uri_root, secret_name = null, secret_key = null },
-    { name = "CDN_ROOT", value = "${var.api_uri_root}/cdn", secret_name = null, secret_key = null },
+    { name = "API_URI_ROOT", value = local.api_url, secret_name = null, secret_key = null },
+    { name = "CDN_ROOT", value = "${local.api_url}/cdn", secret_name = null, secret_key = null },
+    { name = "SSE_URI_ROOT", value = local.api_url, secret_name = null, secret_key = null },
+    { name = "REACTORY_SITE_URL", value = local.web_url, secret_name = null, secret_key = null },
+    { name = "REACTORY_APPLICATION_URL", value = local.web_url, secret_name = null, secret_key = null },
+    { name = "REACTORY_APP_WHITELIST", value = "${local.web_url},http://localhost:3000,http://localhost:4000", secret_name = null, secret_key = null },
+    { name = "REACTORY_STREAMING_FANOUT", value = "on", secret_name = null, secret_key = null },
+    { name = "I18N_NS", value = "reactory,reactor,booktutor,zepz-engineer", secret_name = null, secret_key = null },
   ]
 
   env_mongo = [
@@ -122,10 +115,6 @@ locals {
     { name = "REACTORY_REDIS_PORT", value = tostring(var.redis.port), secret_name = null, secret_key = null },
     { name = "REACTORY_REDIS_DB", value = tostring(var.redis.db), secret_name = null, secret_key = null },
     { name = "REACTORY_REDIS_PASSWORD", value = null, secret_name = var.redis.secret_name, secret_key = var.redis.password_key },
-    # Managed Redis-compatible services generally mandate TLS once an AUTH
-    # token is set (ElastiCache and DigitalOcean Valkey both do); an in-cluster
-    # valkey_selfhosted pod does not offer it. The caller sets redis.tls to
-    # match. See readme.md "Known gaps" — the client does not honour this yet.
     { name = "REACTORY_REDIS_TLS", value = tostring(var.redis.tls), secret_name = null, secret_key = null },
   ]
 
@@ -162,17 +151,23 @@ locals {
   )
 
   # -------------------------------------------------------------------------
-  # Ingress
-  #
-  # Annotations come from the caller — see the variable docs for why. A TLS
-  # block is emitted only when both a hostname and a Secret name are present,
-  # since a TLS entry without a host matches nothing.
+  # Ingress Defaults
   # -------------------------------------------------------------------------
-  ingress_tls_enabled = (
-    var.ingress.tls_secret_name != null &&
-    var.ingress.tls_secret_name != "" &&
-    var.ingress.domain_name != ""
-  )
+  default_api_annotations = {
+    "cert-manager.io/cluster-issuer"                 = "letsencrypt-prod"
+    "nginx.ingress.kubernetes.io/force-ssl-redirect" = "true"
+    "nginx.ingress.kubernetes.io/proxy-body-size"      = "64m"
+    "nginx.ingress.kubernetes.io/proxy-buffering"      = "off"
+    "nginx.ingress.kubernetes.io/proxy-read-timeout"  = "3600"
+    "nginx.ingress.kubernetes.io/proxy-send-timeout"  = "3600"
+    "nginx.ingress.kubernetes.io/websocket-services"  = local.server_name
+  }
+
+  default_web_annotations = {
+    "cert-manager.io/cluster-issuer"                 = "letsencrypt-prod"
+    "nginx.ingress.kubernetes.io/force-ssl-redirect" = "true"
+    "nginx.ingress.kubernetes.io/proxy-body-size"      = "10m"
+  }
 }
 
 # ---------------------------------------------------------------------------
@@ -310,10 +305,10 @@ resource "kubernetes_deployment" "express_server" {
               path = "/health"
               port = var.api_port
             }
-            initial_delay_seconds = 60
+            initial_delay_seconds = 180
             period_seconds        = 20
             timeout_seconds       = 5
-            failure_threshold     = 3
+            failure_threshold     = 6
           }
 
           readiness_probe {
@@ -321,11 +316,11 @@ resource "kubernetes_deployment" "express_server" {
               path = "/health"
               port = var.api_port
             }
-            initial_delay_seconds = 20
+            initial_delay_seconds = 60
             period_seconds        = 10
             timeout_seconds       = 5
             success_threshold     = 1
-            failure_threshold     = 3
+            failure_threshold     = 6
           }
         }
 
@@ -399,8 +394,6 @@ resource "kubernetes_horizontal_pod_autoscaler_v2" "express_server" {
   }
 }
 
-# A rolling update alone does not protect against node drains; a PDB keeps at
-# least one replica serving during voluntary disruption.
 resource "kubernetes_pod_disruption_budget_v1" "express_server" {
   count = var.enable_pdb ? 1 : 0
 
@@ -580,10 +573,101 @@ resource "kubernetes_pod_disruption_budget_v1" "pwa_client" {
 }
 
 # ---------------------------------------------------------------------------
-# Ingress — /api to the server, everything else to the client
+# DUAL-DOMAIN INGRESS ARCHITECTURE
+# 1. API Ingress — routes all paths on api_domain to express-server
+# 2. Web Ingress — routes all paths on web_domain to pwa-client (SPA)
+# Fallback: Single Ingress for legacy single-domain setups
 # ---------------------------------------------------------------------------
+
+# 1. API Ingress (Dual-Domain mode)
+resource "kubernetes_ingress_v1" "api" {
+  count = var.ingress.enabled && local.is_dual_domain ? 1 : 0
+
+  metadata {
+    name      = "${local.server_name}-ingress"
+    namespace = var.namespace
+    labels    = local.common_labels
+    annotations = merge(
+      local.default_api_annotations,
+      var.ingress.annotations,
+      var.ingress.api_annotations
+    )
+  }
+
+  spec {
+    ingress_class_name = var.ingress.class_name
+
+    tls {
+      hosts       = [local.api_domain]
+      secret_name = "${var.ingress.tls_secret_name}-api"
+    }
+
+    rule {
+      host = local.api_domain
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = kubernetes_service.express_server.metadata[0].name
+              port {
+                number = var.api_port
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# 2. Web Client Ingress (Dual-Domain mode)
+resource "kubernetes_ingress_v1" "web" {
+  count = var.ingress.enabled && local.is_dual_domain ? 1 : 0
+
+  metadata {
+    name      = "${local.client_name}-ingress"
+    namespace = var.namespace
+    labels    = local.common_labels
+    annotations = merge(
+      local.default_web_annotations,
+      var.ingress.annotations,
+      var.ingress.web_annotations
+    )
+  }
+
+  spec {
+    ingress_class_name = var.ingress.class_name
+
+    tls {
+      hosts       = [local.web_domain]
+      secret_name = "${var.ingress.tls_secret_name}-web"
+    }
+
+    rule {
+      host = local.web_domain
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = kubernetes_service.pwa_client.metadata[0].name
+              port {
+                number = 80
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# 3. Single Ingress Fallback (Legacy single-domain mode)
 resource "kubernetes_ingress_v1" "reactory" {
-  count = var.ingress.enabled ? 1 : 0
+  count = var.ingress.enabled && !local.is_dual_domain ? 1 : 0
 
   metadata {
     name        = "reactory-ingress"
@@ -593,31 +677,48 @@ resource "kubernetes_ingress_v1" "reactory" {
   }
 
   spec {
-    # ingressClassName replaces the deprecated kubernetes.io/ingress.class
-    # annotation, which neither the AWS Load Balancer Controller nor recent
-    # ingress-nginx releases honour any more.
     ingress_class_name = var.ingress.class_name
 
     dynamic "tls" {
-      for_each = local.ingress_tls_enabled ? [1] : []
+      for_each = var.ingress.tls_secret_name != null && var.ingress.tls_secret_name != "" && local.web_domain != "" ? [1] : []
       content {
-        hosts       = [var.ingress.domain_name]
+        hosts       = [local.web_domain]
         secret_name = var.ingress.tls_secret_name
       }
     }
 
     rule {
-      host = var.ingress.domain_name != "" ? var.ingress.domain_name : null
+      host = local.web_domain != "" ? local.web_domain : null
 
       http {
-        path {
-          path      = var.ingress.api_path_prefix
-          path_type = "Prefix"
-          backend {
-            service {
-              name = kubernetes_service.express_server.metadata[0].name
-              port {
-                number = var.api_port
+        dynamic "path" {
+          for_each = [
+            var.ingress.api_path_prefix,
+            "/cdn",
+            "/graph",
+            "/graphql",
+            "/health",
+            "/telemetry",
+            "/stream",
+            "/auth",
+            "/login",
+            "/logout",
+            "/user",
+            "/amq",
+            "/pdf",
+            "/resources",
+            "/reactory",
+            "/search"
+          ]
+          content {
+            path      = path.value
+            path_type = "Prefix"
+            backend {
+              service {
+                name = kubernetes_service.express_server.metadata[0].name
+                port {
+                  number = var.api_port
+                }
               }
             }
           }

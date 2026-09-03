@@ -144,6 +144,7 @@ variable "api_port" {
 variable "api_uri_root" {
   description = "Public base URL the server advertises (API_URI_ROOT); CDN_ROOT derives from it"
   type        = string
+  default     = "http://localhost:4000"
 }
 
 variable "reactory_paths" {
@@ -177,10 +178,6 @@ variable "extra_env" {
 
 # ---------------------------------------------------------------------------
 # Data services
-#
-# Each block names the Kubernetes Secret that holds its credentials. Those
-# Secrets are projected by External Secrets Operator — pass
-# module.external_secrets.kubernetes_secret_names[...] rather than literals.
 # ---------------------------------------------------------------------------
 variable "mongo" {
   description = <<-EOT
@@ -275,31 +272,26 @@ variable "ca_bundle_url" {
 }
 
 # ---------------------------------------------------------------------------
-# Ingress
+# Ingress (Supports Dual-Domain Ingress: web_domain_name & api_domain_name)
 # ---------------------------------------------------------------------------
 variable "ingress" {
   description = <<-EOT
-    Ingress routing. Deliberately controller-agnostic: this module owns the
-    rules — /api to the server, everything else to the client — while the
-    caller supplies whatever annotations its controller needs.
-
-    Annotations are not built here because they are entirely
-    controller-specific: AWS wants alb.ingress.kubernetes.io/*, ingress-nginx on
-    DigitalOcean and Linode wants nginx.ingress.kubernetes.io/*. Each workload
-    layer composes its own set and passes it in.
-
-    tls_secret_name enables a TLS block on the Ingress. With cert-manager, name
-    the Secret it will populate and add the cert-manager.io/cluster-issuer
-    annotation; with AWS the certificate lives on the ALB instead and this stays
-    null.
+    Dual-domain ingress configuration for Reactory Web and API endpoints:
+    - web_domain_name: dedicated hostname for static SPA PWA client (e.g. booktutor-web.reactory.net)
+    - api_domain_name: dedicated hostname for express/apollo API server (e.g. booktutor-api.reactory.net)
+    - domain_name: optional fallback for single-domain legacy setups
   EOT
   type = object({
     enabled         = optional(bool, true)
     class_name      = optional(string, "nginx")
+    web_domain_name = optional(string, "")
+    api_domain_name = optional(string, "")
     domain_name     = optional(string, "")
+    tls_secret_name = optional(string, "reactory-tls")
+    web_annotations = optional(map(string), {})
+    api_annotations = optional(map(string), {})
     annotations     = optional(map(string), {})
     api_path_prefix = optional(string, "/api")
-    tls_secret_name = optional(string)
   })
   default = {}
 }

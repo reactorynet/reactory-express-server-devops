@@ -138,6 +138,67 @@ services:
     networks:
       - reactory-network
 
+  reactory_express_server:
+    image: localhost/reactory/reactory-express-server:latest
+    container_name: reactory-express-server
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+      - '9464:9464'
+    volumes:
+      - ${REACTORY_DATA}:/reactory/reactory-data:z
+      - ${REACTORY_CLIENT}:/reactory/reactory-client:z
+      - ${REACTORY_SERVER}/config/${REACTORY_CONFIG_ID:-reactory}/.env.${REACTORY_ENV_ID:-podman}:/reactory/reactory-express-server/.env:z
+      - ${REACTORY_SERVER}/certificates:/etc/ssl/certs:z
+    environment:
+      - REACTORY_HOME=/reactory
+      - REACTORY_DATA=/reactory/reactory-data
+      - REACTORY_SERVER=/reactory/reactory-express-server
+      - REACTORY_CLIENT=/reactory/reactory-client
+      - REACTORY_PLUGINS=/reactory/reactory-data/plugins
+      - HOME=/root
+    working_dir: /reactory/reactory-express-server
+    command: bin/run-otel.sh
+    networks:
+      - reactory-network
+
+  reactory_pwa_client:
+    image: localhost/reactory/reactory-pwa-client:latest
+    container_name: reactory-pwa-client
+    restart: unless-stopped
+    ports:
+      - '${REACTORY_PWA_CLIENT_PORT:-9000}:80'
+    volumes:
+      - ${REACTORY_CLIENT}/build/reactory/${REACTORY_ENV_ID:-podman}:/usr/share/nginx/html:z
+    networks:
+      - reactory-network
+
+  booktutor_pwa_client:
+    image: localhost/reactory/booktutor-pwa-client:latest
+    container_name: booktutor-pwa-client
+    restart: unless-stopped
+    ports:
+      - '${BOOKTUTOR_PWA_CLIENT_PORT:-9001}:80'
+    volumes:
+      - ${REACTORY_CLIENT}/build/booktutor/${REACTORY_ENV_ID:-podman}:/usr/share/nginx/html:z
+    networks:
+      - reactory-network
+
+  reactory_gateway:
+    image: docker.io/library/nginx:alpine
+    container_name: reactory-gateway
+    restart: unless-stopped
+    ports:
+      - '${GATEWAY_PORT:-8000}:80'
+    volumes:
+      - ${REACTORY_SERVER}/config/${REACTORY_CONFIG_ID:-reactory}/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - reactory_express_server
+      - reactory_pwa_client
+      - booktutor_pwa_client
+    networks:
+      - reactory-network
+
 volumes:
   postgres_data:
   meilisearch_data:

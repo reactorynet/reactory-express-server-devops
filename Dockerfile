@@ -23,6 +23,8 @@ ENV WORKDIR_PATH=/${CONFIG_ID}/reactory-express-server
 ENV BUILD_TAR_FILE=${CONFIG_ID}-server-${ENV_ID}-${BUILD_VERSION}.tar.gz
 # Only set when custom certs are present; empty string means Node uses its default trust store.
 ENV NODE_EXTRA_CA_CERTS=${NODE_EXTRA_CA_CERTS_VALUE}
+ENV PYTHON=/usr/bin/python3
+ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
 
 # Copy certificates into the image.
 # build-image.sh guarantees the local certificates/ directory exists (creating it if absent),
@@ -57,6 +59,7 @@ RUN apt-get update -y && \
 	build-essential \
 	pkg-config \
 	python3 \
+	python-is-python3 \
 	chromium \
 	libcairo2-dev \
 	libgif-dev \
@@ -68,13 +71,6 @@ RUN apt-get update -y && \
 	rm -rf /var/lib/apt/lists/*
 
 WORKDIR /
-
-# Create a reactory user and group
-# RUN groupadd -r reactory && useradd -r -g reactory reactory
-
-# Set the password for the reactory user using environment variables
-# ENV REACTORY_USER_PASSWORD=${REACTORY_USER_PASSWORD:-reactory}
-# RUN echo "reactory:${REACTORY_USER_PASSWORD}" | chpasswd
 
 RUN mkdir -p /reactory/reactory-core && \
 	mkdir -p /reactory/reactory-express-server && \

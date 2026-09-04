@@ -74,12 +74,13 @@ locals {
   valkey_host      = "valkey.${local.namespace}.svc.cluster.local"
   meilisearch_host = "http://meilisearch.${local.namespace}.svc.cluster.local:7700"
 
-  # Without a domain the NodeBalancer IP is unknown until after apply, so
-  # api_uri_root can be supplied explicitly on a second pass.
+  # Domain configurations
+  api_domain = var.api_domain_name != "" ? var.api_domain_name : "api.${var.domain_name}"
+  web_domain = var.web_domain_name != "" ? var.web_domain_name : var.domain_name
+
   api_uri_root = (
     var.api_uri_root != "" ? var.api_uri_root
-    : var.domain_name != "" ? "https://${var.domain_name}"
-    : "http://reactory-express-server.${local.namespace}.svc.cluster.local:4000"
+    : "https://${local.api_domain}"
   )
 
   # TLS only makes sense once a domain resolves to the NodeBalancer — the
@@ -221,7 +222,7 @@ module "ingress_nginx" {
 }
 
 # ---------------------------------------------------------------------------
-# Application
+# Application (Multi-Client & Dual-Domain Architecture)
 # ---------------------------------------------------------------------------
 module "reactory_app" {
   source = "../../../../modules/kubernetes/reactory_app"
@@ -233,7 +234,7 @@ module "reactory_app" {
   pwa_client_image     = "${var.image_registry}/${var.pwa_client_image}:${var.image_tag}"
   image_pull_secrets   = compact([module.app_secrets.registry_secret_name])
 
-  node_env     = "development"
+  node_env     = "production"
   api_uri_root = local.api_uri_root
 
   express_server = {
@@ -250,6 +251,17 @@ module "reactory_app" {
     cpu_request    = "50m"
     memory_request = "64Mi"
   }
+
+  # Additional multi-tenant frontends (e.g. BookTutor PWA)
+  additional_clients = var.booktutor_domain_name != "" ? {
+    booktutor = {
+      image          = "${var.image_registry}/${var.booktutor_client_image}:${var.image_tag}"
+      domain_name    = var.booktutor_domain_name
+      replicas       = 1
+      cpu_request    = "50m"
+      memory_request = "64Mi"
+    }
+  } : {}
 
   # One node, one replica: nothing to spread, nothing to protect from a drain,
   # and no metrics-server to autoscale from.
@@ -289,25 +301,14 @@ module "reactory_app" {
   }
 
   ingress = {
-    enabled     = true
-    class_name  = module.ingress_nginx.ingress_class_name
-    domain_name = var.domain_name
+    enabled         = true
+    class_name      = module.ingress_nginx.ingress_class_name
+    web_domain_name = local.web_domain
+    api_domain_name = local.api_domain
+    domain_name     = var.domain_name
     annotations = merge(
       {
-        "nginx.ingress.kubernetes.io/proxy-body-size" = "32m"
-
-        # Server-sent events. An SSE stream is a response that stays open for
-        # minutes or hours and can be silent for long stretches, which the
-        # defaults are actively hostile to:
-        #  - proxy-read-timeout defaults to 60s, so nginx closes any stream it
-        #    has seen no traffic on for a minute. The server sends a keepalive
-        #    comment every 25s (REACTORY_STREAMING_HEARTBEAT_MS), so 60s would
-        #    mostly hold — but a slow tool call or a paused worker overruns it
-        #    and every stream reconnects. One hour is comfortably clear of that.
-        #  - proxy-buffering would hold the response until a buffer filled,
-        #    turning a token stream into one delayed dump. The server also sets
-        #    X-Accel-Buffering: no per response; this covers the ingress-wide
-        #    default so the two cannot disagree.
+        "nginx.ingress.kubernetes.io/proxy-body-size"    = "32m"
         "nginx.ingress.kubernetes.io/proxy-read-timeout" = "3600"
         "nginx.ingress.kubernetes.io/proxy-send-timeout" = "3600"
         "nginx.ingress.kubernetes.io/proxy-buffering"    = "off"

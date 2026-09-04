@@ -53,6 +53,25 @@ variable "image_pull_secrets" {
 }
 
 # ---------------------------------------------------------------------------
+# Additional Multi-Tenant Clients
+# ---------------------------------------------------------------------------
+variable "additional_clients" {
+  description = "Map of additional PWA client applications to deploy alongside reactory-pwa-client (e.g. booktutor)"
+  type = map(object({
+    image           = string
+    domain_name     = string
+    replicas        = optional(number, 1)
+    cpu_request     = optional(string, "50m")
+    cpu_limit       = optional(string, "500m")
+    memory_request  = optional(string, "64Mi")
+    memory_limit    = optional(string, "512Mi")
+    annotations     = optional(map(string), {})
+    tls_secret_name = optional(string)
+  }))
+  default = {}
+}
+
+# ---------------------------------------------------------------------------
 # Sizing
 # ---------------------------------------------------------------------------
 variable "express_server" {
@@ -167,7 +186,7 @@ variable "server_command" {
 
 variable "server_args" {
   type    = list(string)
-  default = ["-c", "bin/run-otel.sh"]
+  default = ["-c", "sh bin/run-otel.sh"]
 }
 
 variable "extra_env" {

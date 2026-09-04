@@ -2,12 +2,8 @@
 # module: reactory_app
 #
 # The Reactory workloads — express-server and pwa-client — with their Services,
-# optional HPAs and PDBs, and Dual-Domain Ingress (Web *-web.* and API *-api.*).
-#
-# Cloud-agnostic: it speaks only the Kubernetes API, so AWS, DigitalOcean,
-# Linode and minikube all compose this same module. Anything provider-specific
-# — ALB versus ingress-nginx annotations, managed versus in-cluster database
-# endpoints — arrives through variables.
+# optional HPAs and PDBs, Dual-Domain Ingress (Web *-web.* and API *-api.*),
+# and support for multi-tenant additional PWA clients (e.g. BookTutor).
 # ---------------------------------------------------------------------------
 
 terraform {
@@ -32,8 +28,6 @@ locals {
   server_labels = merge(local.common_labels, { app = local.server_name })
   client_labels = merge(local.common_labels, { app = local.client_name })
 
-  # DocumentDB requires TLS against the Amazon RDS trust store. The bundle is
-  # fetched into an emptyDir rather than baked into the application image.
   needs_ca_bundle = var.mongo.tls && var.mongo.ca_file != null
   ca_dir          = local.needs_ca_bundle ? dirname(var.mongo.ca_file) : ""
 
@@ -53,7 +47,38 @@ locals {
   web_url = local.web_domain != "" ? "https://${local.web_domain}" : var.api_uri_root
 
   # -------------------------------------------------------------------------
-  # MONGOOSE connection string.
+  # Comprehensive CORS Whitelist (HTTP + HTTPS for all tenants)
+  # -------------------------------------------------------------------------
+  all_whitelist_origins = distinct(compact(concat(
+    [
+      "http://localhost:3000",
+      "http://localhost:3004",
+      "http://localhost:4000",
+      "http://reactory.net",
+      "https://reactory.net",
+      "http://www.reactory.net",
+      "https://www.reactory.net",
+      "http://app.reactory.net",
+      "https://app.reactory.net",
+      "http://api.reactory.net",
+      "https://api.reactory.net",
+      "http://apex.reactory.net",
+      "https://apex.reactory.net",
+      "http://booktutor.reactory.net",
+      "https://booktutor.reactory.net",
+      local.web_url,
+      local.api_url,
+      "http://${local.web_domain}",
+      "https://${local.web_domain}",
+      "http://${local.api_domain}",
+      "https://${local.api_domain}",
+    ],
+    [for k, v in var.additional_clients : "http://${v.domain_name}" if v.domain_name != ""],
+    [for k, v in var.additional_clients : "https://${v.domain_name}" if v.domain_name != ""],
+  )))
+
+  # -------------------------------------------------------------------------
+  # MONGOOSE connection string
   # -------------------------------------------------------------------------
   mongo_query = join("", concat(
     ["?authSource=${var.mongo.auth_source}"],
@@ -70,7 +95,7 @@ locals {
   ])
 
   # -------------------------------------------------------------------------
-  # Environment list.
+  # Environment list
   # -------------------------------------------------------------------------
   env_paths = [
     { name = "REACTORY_HOME", value = var.reactory_paths.home, secret_name = null, secret_key = null },
@@ -91,7 +116,7 @@ locals {
     { name = "SSE_URI_ROOT", value = local.api_url, secret_name = null, secret_key = null },
     { name = "REACTORY_SITE_URL", value = local.web_url, secret_name = null, secret_key = null },
     { name = "REACTORY_APPLICATION_URL", value = local.web_url, secret_name = null, secret_key = null },
-    { name = "REACTORY_APP_WHITELIST", value = "${local.web_url},http://localhost:3000,http://localhost:4000", secret_name = null, secret_key = null },
+    { name = "REACTORY_APP_WHITELIST", value = join(",", local.all_whitelist_origins), secret_name = null, secret_key = null },
     { name = "REACTORY_STREAMING_FANOUT", value = "on", secret_name = null, secret_key = null },
     { name = "I18N_NS", value = "reactory,reactor,booktutor,zepz-engineer", secret_name = null, secret_key = null },
   ]
@@ -156,17 +181,17 @@ locals {
   default_api_annotations = {
     "cert-manager.io/cluster-issuer"                 = "letsencrypt-prod"
     "nginx.ingress.kubernetes.io/force-ssl-redirect" = "true"
-    "nginx.ingress.kubernetes.io/proxy-body-size"      = "64m"
-    "nginx.ingress.kubernetes.io/proxy-buffering"      = "off"
-    "nginx.ingress.kubernetes.io/proxy-read-timeout"  = "3600"
-    "nginx.ingress.kubernetes.io/proxy-send-timeout"  = "3600"
-    "nginx.ingress.kubernetes.io/websocket-services"  = local.server_name
+    "nginx.ingress.kubernetes.io/proxy-body-size"    = "64m"
+    "nginx.ingress.kubernetes.io/proxy-buffering"    = "off"
+    "nginx.ingress.kubernetes.io/proxy-read-timeout" = "3600"
+    "nginx.ingress.kubernetes.io/proxy-send-timeout" = "3600"
+    "nginx.ingress.kubernetes.io/websocket-services" = local.server_name
   }
 
   default_web_annotations = {
     "cert-manager.io/cluster-issuer"                 = "letsencrypt-prod"
     "nginx.ingress.kubernetes.io/force-ssl-redirect" = "true"
-    "nginx.ingress.kubernetes.io/proxy-body-size"      = "10m"
+    "nginx.ingress.kubernetes.io/proxy-body-size"    = "10m"
   }
 }
 
@@ -411,7 +436,7 @@ resource "kubernetes_pod_disruption_budget_v1" "express_server" {
 }
 
 # ---------------------------------------------------------------------------
-# pwa-client
+# pwa-client (Primary / Default Reactory Management Client)
 # ---------------------------------------------------------------------------
 resource "kubernetes_deployment" "pwa_client" {
   metadata {
@@ -573,9 +598,118 @@ resource "kubernetes_pod_disruption_budget_v1" "pwa_client" {
 }
 
 # ---------------------------------------------------------------------------
+# Additional Multi-Tenant Clients (e.g. BookTutor)
+# ---------------------------------------------------------------------------
+resource "kubernetes_deployment" "additional_pwa_client" {
+  for_each = var.additional_clients
+
+  metadata {
+    name      = "${each.key}-pwa-client"
+    namespace = var.namespace
+    labels    = merge(local.common_labels, { app = "${each.key}-pwa-client" })
+  }
+
+  wait_for_rollout = var.wait_for_rollout
+
+  spec {
+    replicas = each.value.replicas
+
+    selector {
+      match_labels = { app = "${each.key}-pwa-client" }
+    }
+
+    strategy {
+      type = "RollingUpdate"
+      rolling_update {
+        max_surge       = var.rolling_update.max_surge
+        max_unavailable = var.rolling_update.max_unavailable
+      }
+    }
+
+    template {
+      metadata {
+        labels = merge(local.common_labels, { app = "${each.key}-pwa-client" })
+      }
+
+      spec {
+        dynamic "image_pull_secrets" {
+          for_each = var.image_pull_secrets
+          content {
+            name = image_pull_secrets.value
+          }
+        }
+
+        container {
+          name              = "${each.key}-pwa-client"
+          image             = each.value.image
+          image_pull_policy = var.image_pull_policy
+
+          port {
+            container_port = 80
+            name           = "http"
+          }
+
+          resources {
+            requests = {
+              cpu    = each.value.cpu_request
+              memory = each.value.memory_request
+            }
+            limits = {
+              cpu    = each.value.cpu_limit
+              memory = each.value.memory_limit
+            }
+          }
+
+          liveness_probe {
+            http_get {
+              path = "/"
+              port = 80
+            }
+            initial_delay_seconds = 15
+            period_seconds        = 20
+            timeout_seconds       = 5
+          }
+
+          readiness_probe {
+            http_get {
+              path = "/"
+              port = 80
+            }
+            initial_delay_seconds = 5
+            period_seconds        = 10
+            timeout_seconds       = 5
+          }
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_service" "additional_pwa_client" {
+  for_each = var.additional_clients
+
+  metadata {
+    name      = "${each.key}-pwa-client"
+    namespace = var.namespace
+    labels    = merge(local.common_labels, { app = "${each.key}-pwa-client" })
+  }
+  spec {
+    selector = { app = "${each.key}-pwa-client" }
+    port {
+      name        = "http"
+      port        = 80
+      target_port = 80
+      protocol    = "TCP"
+    }
+    type = "ClusterIP"
+  }
+}
+
+# ---------------------------------------------------------------------------
 # DUAL-DOMAIN INGRESS ARCHITECTURE
 # 1. API Ingress — routes all paths on api_domain to express-server
 # 2. Web Ingress — routes all paths on web_domain to pwa-client (SPA)
+# 3. Additional Web Ingresses — routes each additional tenant domain
 # Fallback: Single Ingress for legacy single-domain setups
 # ---------------------------------------------------------------------------
 
@@ -665,7 +799,53 @@ resource "kubernetes_ingress_v1" "web" {
   }
 }
 
-# 3. Single Ingress Fallback (Legacy single-domain mode)
+# 3. Additional Web Client Ingresses (Multi-Client)
+resource "kubernetes_ingress_v1" "additional_web" {
+  for_each = {
+    for k, v in var.additional_clients : k => v
+    if var.ingress.enabled && v.domain_name != ""
+  }
+
+  metadata {
+    name      = "${each.key}-pwa-client-ingress"
+    namespace = var.namespace
+    labels    = local.common_labels
+    annotations = merge(
+      local.default_web_annotations,
+      var.ingress.annotations,
+      each.value.annotations
+    )
+  }
+
+  spec {
+    ingress_class_name = var.ingress.class_name
+
+    tls {
+      hosts       = [each.value.domain_name]
+      secret_name = each.value.tls_secret_name != null && each.value.tls_secret_name != "" ? each.value.tls_secret_name : "${var.ingress.tls_secret_name}-${each.key}"
+    }
+
+    rule {
+      host = each.value.domain_name
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = kubernetes_service.additional_pwa_client[each.key].metadata[0].name
+              port {
+                number = 80
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# 4. Single Ingress Fallback (Legacy single-domain mode)
 resource "kubernetes_ingress_v1" "reactory" {
   count = var.ingress.enabled && !local.is_dual_domain ? 1 : 0
 

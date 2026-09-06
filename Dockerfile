@@ -86,6 +86,11 @@ COPY build/server/${CONFIG_ID}/${BUILD_TAR_FILE} ${WORKDIR_PATH}
 RUN corepack enable && \
 	tar -xvzf ${BUILD_TAR_FILE} > /dev/null 2>&1 && \
 	rm ${BUILD_TAR_FILE} && \
+	if [ -d "${WORKDIR_PATH}/data" ]; then \
+		echo "📦 Populating /reactory/reactory-data from build data..." && \
+		cp -r ${WORKDIR_PATH}/data/* /reactory/reactory-data/ && \
+		chmod -R a+rX /reactory/reactory-data; \
+	fi && \
 	yarn workspaces focus --all --production && \
 	npm install -g env-cmd && \
 	yarn cache clean && \

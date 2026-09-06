@@ -325,6 +325,14 @@ resource "kubernetes_deployment" "express_server" {
             }
           }
 
+          dynamic "volume_mount" {
+            for_each = var.reactory_data_volume.enabled ? [1] : []
+            content {
+              name       = "reactory-data"
+              mount_path = var.reactory_paths.data
+            }
+          }
+
           liveness_probe {
             http_get {
               path = "/health"
@@ -354,6 +362,16 @@ resource "kubernetes_deployment" "express_server" {
           content {
             name = "db-ca-bundle"
             empty_dir {}
+          }
+        }
+
+        dynamic "volume" {
+          for_each = var.reactory_data_volume.enabled ? [1] : []
+          content {
+            name = "reactory-data"
+            persistent_volume_claim {
+              claim_name = var.reactory_data_volume.claim_name != "" ? var.reactory_data_volume.claim_name : "${local.server_name}-data"
+            }
           }
         }
       }

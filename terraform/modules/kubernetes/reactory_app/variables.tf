@@ -314,3 +314,14 @@ variable "ingress" {
   })
   default = {}
 }
+
+variable "reactory_data_volume" {
+  description = "Persistent Volume Claim configuration for /reactory/reactory-data"
+  type = object({
+    enabled       = optional(bool, false)
+    claim_name    = optional(string, "")
+    storage_class = optional(string, "")
+    storage_size  = optional(string, "10Gi")
+  })
+  default = {}
+}

@@ -246,6 +246,11 @@ module "reactory_app" {
     memory_limit   = "1Gi"
   }
 
+  reactory_data_volume = {
+    enabled    = true
+    claim_name = "reactory-express-server-data"
+  }
+
   pwa_client = {
     replicas       = 1
     cpu_request    = "50m"

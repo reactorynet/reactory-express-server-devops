@@ -1,3 +1,14 @@
-./gradle
-./idea
-./vscode
+node_modules
+.git
+.yarn/cache
+.yarn/unplugged
+.yarn/install-state.gz
+build/server/reactory/local
+build/server/reactory/podman
+build/server/reactory/linode
+!build/server/*/*.tar.gz
+src
+test
+coverage
+*.log
+certificates/*.txt

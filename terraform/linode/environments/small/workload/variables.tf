@@ -29,14 +29,21 @@ variable "express_server_image" {
 }
 
 variable "pwa_client_image" {
-  type    = string
-  default = "reactorynet/reactory-pwa-client"
+  description = "Repository path for default reactory management client, e.g. reactorynet/reactory-pwa-client"
+  type        = string
+  default     = "reactorynet/reactory-pwa-client"
+}
+
+variable "booktutor_client_image" {
+  description = "Repository path for BookTutor client, e.g. reactorynet/booktutor-pwa-client"
+  type        = string
+  default     = "reactorynet/booktutor-pwa-client"
 }
 
 variable "image_tag" {
   description = "Image tag to deploy"
   type        = string
-  default     = "latest"
+  default     = "1.1.0"
 }
 
 variable "registry_auth" {
@@ -54,12 +61,30 @@ variable "registry_auth" {
 }
 
 # ---------------------------------------------------------------------------
-# Ingress and TLS
+# Ingress and Multi-Tenant Domains
 # ---------------------------------------------------------------------------
 variable "domain_name" {
-  description = "Domain for the Ingress host rule. Empty serves plain HTTP on the NodeBalancer IP."
+  description = "Fallback domain name if specific hostnames are omitted"
   type        = string
-  default     = ""
+  default     = "reactory.net"
+}
+
+variable "web_domain_name" {
+  description = "Domain for the Reactory management client Ingress (e.g. reactory.net, app.reactory.net)"
+  type        = string
+  default     = "reactory.net"
+}
+
+variable "api_domain_name" {
+  description = "Domain for the shared Express backend API Ingress (e.g. api.reactory.net)"
+  type        = string
+  default     = "api.reactory.net"
+}
+
+variable "booktutor_domain_name" {
+  description = "Domain for the BookTutor client Ingress (e.g. apex.reactory.net)"
+  type        = string
+  default     = "apex.reactory.net"
 }
 
 variable "enable_tls" {
@@ -91,12 +116,10 @@ variable "acme_server" {
 
 variable "api_uri_root" {
   description = <<-EOT
-    Public base URL the server advertises. Defaults to https://<domain_name>.
-    With no domain the NodeBalancer IP is unknown until after apply — read
-    load_balancer_ip from the outputs, set this, and re-apply.
+    Public base URL the server advertises. Defaults to https://api.reactory.net.
   EOT
   type        = string
-  default     = ""
+  default     = "https://api.reactory.net"
 }
 
 # ---------------------------------------------------------------------------

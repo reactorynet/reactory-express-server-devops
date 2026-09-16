@@ -150,6 +150,16 @@ variable "meilisearch_storage_size" {
   default = "2Gi"
 }
 
+variable "reactory_data_storage_size" {
+  description = <<-EOT
+    Size of the /reactory/reactory-data claim — uploaded files, generated email
+    templates and the compiled module/plugin working copies. Larger than the
+    database volumes because it accumulates user uploads.
+  EOT
+  type        = string
+  default     = "10Gi"
+}
+
 # ---------------------------------------------------------------------------
 # Secrets — supply via TF_VAR_* environment variables.
 # These are written into Kubernetes Secrets and therefore into this layer's state.

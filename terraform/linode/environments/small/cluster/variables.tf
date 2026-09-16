@@ -32,12 +32,16 @@ variable "subnet_ipv4" {
 variable "node_type" {
   description = <<-EOT
     Linode instance type. LKE rejects the 1GB Nanode, so g6-standard-1 (2GB) is
-    the floor. This tier runs MongoDB, PostgreSQL, Valkey and
-    Meilisearch as pods alongside the application, so 4GB is the practical
-    minimum.
+    the floor, but it is not a usable one here.
+
+    This tier runs MongoDB, PostgreSQL, Valkey and Meilisearch as pods alongside
+    the application, so the node's memory is shared five ways. A g6-standard-2
+    (4GB) reports roughly 2.7GiB as allocatable, and an application node cannot
+    be given a workable V8 heap out of what remains — the server aborts on heap
+    exhaustion. g6-standard-4 (8GB) is the practical minimum.
   EOT
   type        = string
-  default     = "g6-standard-2"
+  default     = "g6-standard-4"
 }
 
 variable "node_count" {

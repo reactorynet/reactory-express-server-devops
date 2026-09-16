@@ -35,9 +35,19 @@ variable "maxmemory" {
 }
 
 variable "maxmemory_policy" {
-  description = "Eviction policy once maxmemory is reached"
+  description = <<-EOT
+    Eviction policy once maxmemory is reached.
+
+    Defaults to noeviction because this instance backs BullMQ, which stores job
+    state in Redis. Under an eviction policy such as allkeys-lru the keys holding
+    queued and active jobs are candidates for removal under memory pressure, so
+    jobs are silently lost rather than failing loudly. Bull warns about this on
+    connect, and noeviction is the only policy it considers safe.
+
+    Override only for a pure cache whose contents are genuinely disposable.
+  EOT
   type        = string
-  default     = "allkeys-lru"
+  default     = "noeviction"
 }
 
 variable "persistence_enabled" {

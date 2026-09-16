@@ -41,7 +41,7 @@ disposable anyway and the per-node price is competitive.
 
 | | small | medium | large |
 |---|---|---|---|
-| Nodes | 1 × g6-standard-2 (4GB) | 2 × g6-standard-2 | 3-8 × g6-standard-4, autoscaling |
+| Nodes | 1 × g6-standard-4 (8GB) | 2 × g6-standard-2 | 3-8 × g6-standard-4, autoscaling |
 | Control plane HA | no | no | **yes (irreversible)** |
 | PostgreSQL | pod | Managed, 1 node | Managed, 3-node HA |
 | MongoDB | pod | pod | **pod** |

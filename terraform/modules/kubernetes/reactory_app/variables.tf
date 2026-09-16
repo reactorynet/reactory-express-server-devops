@@ -83,8 +83,48 @@ variable "express_server" {
     cpu_limit      = optional(string, "2")
     memory_request = optional(string, "512Mi")
     memory_limit   = optional(string, "2Gi")
+
+    # Probe paths. The defaults deliberately split the two concerns.
+    #
+    # Liveness asks "is this process still functioning?" and nothing else. It
+    # must not consult dependencies: if it does, a slow or unreachable external
+    # service fails the probe and the kubelet restarts an application that was
+    # never broken. /health/live answers from memory and returns immediately.
+    #
+    # Readiness asks "should this pod receive traffic?" and may consult
+    # dependencies. /health/ready pings only MongoDB, Redis and — where the
+    # deployment configures it — PostgreSQL, each bounded by a short budget.
+    #
+    # Both are served by the core express router, which is always mounted. They
+    # are deliberately not the /telemetry equivalents: those live in an optional
+    # module, and a probe path that can go missing would crash-loop the pod.
+    #
+    # /health remains the deep diagnostic sweep (~100 services) for human use.
+    # It is too expensive to probe with, and it answers 200 regardless of the
+    # service health it reports, so it was never a usable probe.
+    liveness_path  = optional(string, "/health/live")
+    readiness_path = optional(string, "/health/ready")
   })
   default = {}
+}
+
+variable "node_options" {
+  description = <<-EOT
+    NODE_OPTIONS for the server container. Leave blank to derive it.
+
+    Node sizes its V8 old-space cap from the container's cgroup memory limit —
+    about half of it, with no indication in the pod spec that a ceiling exists.
+    A 1Gi limit therefore yields a ~512MB heap, and the process aborts with exit
+    code 134 once it outgrows that.
+
+    When this is blank the module derives --max-old-space-size at ~75% of
+    express_server.memory_limit, which keeps the heap below the cgroup limit so a
+    runaway allocation surfaces as a loggable V8 error rather than a SIGABRT.
+    Set this explicitly to override — for example to pin a ceiling while tuning,
+    or to add flags such as --max-semi-space-size.
+  EOT
+  type        = string
+  default     = ""
 }
 
 variable "pwa_client" {

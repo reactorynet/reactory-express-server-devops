@@ -4,9 +4,20 @@
 # Managed data services at this tier: none — every data service is a pod
 # ---------------------------------------------------------------------------
 
-project = "reactory"
-tier    = "small"
-region = "us-ord"
+project            = "reactory"
+tier               = "small"
+region             = "us-ord"
+kubernetes_version = "1.35"
+
+# Node pool.
+#
+# The node carries the application *and* MongoDB, PostgreSQL, Valkey and
+# Meilisearch, so memory is the binding constraint. g6-standard-2 (4GB) reports
+# only about 2.7GiB as allocatable once the kubelet and system daemons take
+# their share, which does not leave the server a usable V8 heap; g6-standard-4
+# (8GB) is the smallest shape this tier runs comfortably.
+node_type  = "g6-standard-4"
+node_count = 1
 
 # Required environment:
 #   export LINODE_TOKEN="..."

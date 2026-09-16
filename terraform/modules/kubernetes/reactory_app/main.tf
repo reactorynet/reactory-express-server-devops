@@ -32,6 +32,42 @@ locals {
   ca_dir          = local.needs_ca_bundle ? dirname(var.mongo.ca_file) : ""
 
   # -------------------------------------------------------------------------
+  # /reactory/reactory-data claim
+  #
+  # An explicit claim_name means the claim is managed outside this module, so a
+  # claim is only created when it is left blank. The default name is what the
+  # blueprints have always referenced, so adopting the module changes nothing.
+  # -------------------------------------------------------------------------
+  data_claim_name   = var.reactory_data_volume.claim_name != "" ? var.reactory_data_volume.claim_name : "${local.server_name}-data"
+  create_data_claim = var.reactory_data_volume.enabled && var.reactory_data_volume.claim_name == ""
+
+  # -------------------------------------------------------------------------
+  # V8 heap ceiling
+  #
+  # Node sizes its default old-space cap from the cgroup memory limit — roughly
+  # half of it, and invisibly. A 1Gi limit therefore yields a ~512MB heap, and
+  # the process hard-aborts (exit 134, SIGABRT) once it outgrows that, long
+  # before the kernel would step in. Deriving an explicit --max-old-space-size
+  # at ~75% of the limit keeps the heap inside the cgroup and turns a silent
+  # abort into an ordinary, loggable V8 heap-limit error.
+  #
+  # Only Gi/Mi/G/M are recognised; anything else leaves the ceiling to Node.
+  # -------------------------------------------------------------------------
+  mem_limit_mib = (
+    can(regex("^[0-9]+Gi$", var.express_server.memory_limit)) ? tonumber(trimsuffix(var.express_server.memory_limit, "Gi")) * 1024 :
+    can(regex("^[0-9]+Mi$", var.express_server.memory_limit)) ? tonumber(trimsuffix(var.express_server.memory_limit, "Mi")) :
+    can(regex("^[0-9]+G$", var.express_server.memory_limit)) ? tonumber(trimsuffix(var.express_server.memory_limit, "G")) * 1000 :
+    can(regex("^[0-9]+M$", var.express_server.memory_limit)) ? tonumber(trimsuffix(var.express_server.memory_limit, "M")) :
+    null
+  )
+
+  node_options = (
+    var.node_options != "" ? var.node_options :
+    local.mem_limit_mib == null ? "" :
+    "--max-old-space-size=${floor(local.mem_limit_mib * 0.75)}"
+  )
+
+  # -------------------------------------------------------------------------
   # Hostname & Dual-Domain Topology Resolution
   # -------------------------------------------------------------------------
   web_domain = var.ingress.web_domain_name != "" ? var.ingress.web_domain_name : (var.ingress.domain_name != "" ? var.ingress.domain_name : "")
@@ -164,6 +200,12 @@ locals {
     { name = k, value = v, secret_name = null, secret_key = null }
   ]
 
+  # Omitted entirely when the ceiling cannot be derived and nothing was set, so
+  # an unrecognised memory_limit leaves NODE_OPTIONS unset rather than blank.
+  env_computed = local.node_options == "" ? [] : [
+    { name = "NODE_OPTIONS", value = local.node_options, secret_name = null, secret_key = null },
+  ]
+
   server_env = concat(
     local.env_paths,
     local.env_runtime,
@@ -172,6 +214,7 @@ locals {
     local.env_redis,
     local.env_search,
     local.env_secrets,
+    local.env_computed,
     local.env_extra,
   )
 
@@ -193,6 +236,42 @@ locals {
     "nginx.ingress.kubernetes.io/force-ssl-redirect" = "true"
     "nginx.ingress.kubernetes.io/proxy-body-size"    = "10m"
   }
+}
+
+# ---------------------------------------------------------------------------
+# Reactory data volume
+#
+# /reactory/reactory-data holds uploaded files, generated templates and the
+# module/plugin working copies, none of which survive a pod restart if they
+# live in the container filesystem. Without this resource the Deployment named
+# a claim that nothing ever created, so a fresh apply left the pod Pending.
+#
+# Block StorageClasses bind WaitForFirstConsumer, so waiting for the bound
+# state here would deadlock: nothing schedules until the PVC exists, and the
+# PVC does not bind until something schedules.
+# ---------------------------------------------------------------------------
+resource "kubernetes_persistent_volume_claim" "reactory_data" {
+  count = local.create_data_claim ? 1 : 0
+
+  metadata {
+    name      = local.data_claim_name
+    namespace = var.namespace
+    labels    = local.common_labels
+  }
+
+  spec {
+    access_modes = ["ReadWriteOnce"]
+
+    # Empty means "use the cluster default". Passing "" through explicitly would
+    # instead mean "bind to a pre-provisioned PV", which is not the intent.
+    storage_class_name = var.reactory_data_volume.storage_class != "" ? var.reactory_data_volume.storage_class : null
+
+    resources {
+      requests = { storage = var.reactory_data_volume.storage_size }
+    }
+  }
+
+  wait_until_bound = false
 }
 
 # ---------------------------------------------------------------------------
@@ -335,7 +414,7 @@ resource "kubernetes_deployment" "express_server" {
 
           liveness_probe {
             http_get {
-              path = "/health"
+              path = var.express_server.liveness_path
               port = var.api_port
             }
             initial_delay_seconds = 180
@@ -343,10 +422,9 @@ resource "kubernetes_deployment" "express_server" {
             timeout_seconds       = 5
             failure_threshold     = 6
           }
-
           readiness_probe {
             http_get {
-              path = "/health"
+              path = var.express_server.readiness_path
               port = var.api_port
             }
             initial_delay_seconds = 60
@@ -370,7 +448,7 @@ resource "kubernetes_deployment" "express_server" {
           content {
             name = "reactory-data"
             persistent_volume_claim {
-              claim_name = var.reactory_data_volume.claim_name != "" ? var.reactory_data_volume.claim_name : "${local.server_name}-data"
+              claim_name = local.data_claim_name
             }
           }
         }

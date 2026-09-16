@@ -240,15 +240,25 @@ module "reactory_app" {
   express_server = {
     replicas = 1
     # One shared node: keep requests small enough that everything schedules.
-    cpu_request    = "100m"
-    memory_request = "384Mi"
-    cpu_limit      = "1"
-    memory_limit   = "1Gi"
+    cpu_request    = "250m"
+    memory_request = "512Mi"
+    # The node now has 4 vCPUs rather than 2, so the old limit of 1 was sized for
+    # a machine that no longer exists. Node is single-threaded for application
+    # code but its GC threads are not, and a starved collector is how a heap
+    # problem turns into an eviction.
+    cpu_limit = "2"
+    # 2Gi yields a derived --max-old-space-size of 1536MB. The previous 1Gi gave
+    # a 512MB heap that the server exhausted in about 2h30m.
+    memory_limit = "2Gi"
   }
 
+  # Left blank so the module creates and owns the claim. An explicit claim_name
+  # would instead mean "bind to a claim managed elsewhere", and this cluster has
+  # no such claim — the old value named one that nothing ever created.
   reactory_data_volume = {
-    enabled    = true
-    claim_name = "reactory-express-server-data"
+    enabled       = true
+    storage_class = local.storage_class
+    storage_size  = var.reactory_data_storage_size
   }
 
   pwa_client = {

@@ -116,8 +116,16 @@ resource "helm_release" "jaeger" {
   version    = var.jaeger_chart_version
   namespace  = kubernetes_namespace.monitoring.metadata[0].name
 
+  # All-in-one only. The chart defaults agent/collector/query/cassandra to
+  # enabled, so setting allInOne.enabled alone deploys BOTH topologies and the
+  # duplicate jaeger-agent/collector/query Services make the release fail with
+  # "services ... already exists". They must be explicitly disabled, and the
+  # Cassandra data store not provisioned, for a single all-in-one deployment.
   values = [
     yamlencode({
+      provisionDataStore = {
+        cassandra = false
+      }
       allInOne = {
         enabled = true
         resources = {
@@ -128,12 +136,10 @@ resource "helm_release" "jaeger" {
       storage = {
         type = "memory"
       }
-      query = {
-        service = { type = "ClusterIP" }
-      }
-      collector = {
-        service = { type = "ClusterIP" }
-      }
+      agent     = { enabled = false }
+      collector = { enabled = false }
+      query     = { enabled = false }
+      cassandra = { enabled = false }
     })
   ]
 

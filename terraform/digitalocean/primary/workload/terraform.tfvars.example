@@ -1,0 +1,55 @@
+# ---------------------------------------------------------------------------
+# digitalocean / primary / workload — example tfvars.
+#
+# Copy to terraform.tfvars (gitignored) only for the NON-SECRET settings.
+# Secrets are supplied as TF_VAR_* environment variables from
+# config/reactory/.env.digitalocean — see the README.
+# ---------------------------------------------------------------------------
+
+# --- Cluster access ---------------------------------------------------------
+# The pinned kubeconfig for the existing DOKS cluster. Can also be supplied as
+# TF_VAR_kubeconfig_path or REACTORY_PRIMARY_KUBECONFIG.
+kubeconfig_path = "~/.kube/reactory-primary.yaml"
+# kubeconfig_context = "do-fra1-k8s-reactory-pimary"
+
+cluster_name = "do-fra1-k8s-reactory-pimary"
+namespace    = "reactory"
+
+# do-block-storage (delete on release) or do-block-storage-retain (keep volume)
+storage_class = "do-block-storage"
+
+# --- Hostnames / DNS --------------------------------------------------------
+dns_zone    = "reactory.net"
+host_prefix = ""            # empty = apex names: reactory.net, api.reactory.net, apex.reactory.net, compute.reactory.net
+manage_dns  = true
+
+# Set after the first apply from `output load_balancer_ip`, then re-apply: the
+# A records are only created once this is non-empty.
+load_balancer_ip = ""
+
+# --- Images (private GHCR) --------------------------------------------------
+image_registry = "ghcr.io"
+image_tag      = "1.1.0"
+
+registry_username = "wweber"  # normally resolved from `gh` in beforerun.sh
+# registry_token  — resolved from `gh auth token`; never commit it.
+
+# SocialEyes has no client config or image yet; leave off until it does.
+deploy_socialeyes = false
+
+# --- TLS --------------------------------------------------------------------
+enable_tls = true
+acme_email = "ops@reactory.net"
+# acme_server = "https://acme-staging-v02.api.letsencrypt.org/directory"
+
+# --- Telemetry --------------------------------------------------------------
+expose_telemetry  = true
+install_jaeger    = true
+prometheus_retention   = "15d"
+prometheus_storage_size = "20Gi"
+
+# --- Data services ----------------------------------------------------------
+mongodb_storage_size     = "5Gi"
+postgres_storage_size    = "5Gi"
+meilisearch_storage_size = "2Gi"
+reactory_data_storage_size = "10Gi"

@@ -35,6 +35,11 @@ ENV BUN_VERSION=${BUN_VERSION}
 ENV PYTHON=/usr/bin/python3
 ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
 
+# Playwright resolves its browser from PLAYWRIGHT_BROWSERS_PATH. Pinned to an explicit absolute
+# path instead of the default (~/.cache/ms-playwright): the location is operator-visible, it is the
+# same for every process regardless of HOME, and it survives a future non-root USER.
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
 # Copy certificates into the image.
 # build-image.sh guarantees the local certificates/ directory exists (creating it if absent),
 # so this COPY is always safe even when no custom certs are provided.
@@ -104,3 +109,31 @@ RUN corepack enable && \
 	npm install -g env-cmd && \
 	yarn cache clean && \
 	rm -rf /tmp/*
+
+# ── Playwright browser provisioning ───────────────────────────────────────────────────────────
+# The playwright npm package does NOT contain a browser. It pins one build per release and
+# `playwright install` downloads it; installing the package alone yields an image that has
+# playwright and zero browsers, where every browser macro and ReactorPlaywrightService fails at
+# first use:
+#
+#   browserType.launch: Executable doesn't exist at
+#     /root/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/...
+#
+# CHROMIUM ONLY. This codebase imports `chromium` plus browser types and nothing else — firefox,
+# webkit and ffmpeg are never launched, so installing them would only add image size.
+# `--with-deps` also installs the chromium system libraries, and the install covers BOTH
+# `chromium` and `chromium-headless-shell`, which matters because `headless: true` launches go
+# through the headless shell.
+#
+# It runs AFTER `yarn workspaces focus` so the CLI is the version the lockfile pinned, and
+# `${PLAYWRIGHT_BROWSERS_PATH}` is outside WORKDIR so nothing later in this stage can overwrite it.
+RUN node_modules/.bin/playwright install --with-deps chromium && \
+	node_modules/.bin/playwright --version && \
+	chmod -R a+rX ${PLAYWRIGHT_BROWSERS_PATH}
+
+# Launch gate: fails the BUILD — not the first browser macro — when the provisioned browser is
+# missing or does not match the installed package. Byte-identical to the module repo's
+# scripts/verify/playwright-browser-smoke.js; baked into the image so an operator can re-run it:
+#   podman run --rm <image> node /usr/local/bin/reactory-playwright-smoke.js
+COPY bin/verify/playwright-browser-smoke.js /usr/local/bin/reactory-playwright-smoke.js
+RUN node /usr/local/bin/reactory-playwright-smoke.js

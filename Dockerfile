@@ -127,13 +127,51 @@ RUN corepack enable && \
 #
 # It runs AFTER `yarn workspaces focus` so the CLI is the version the lockfile pinned, and
 # `${PLAYWRIGHT_BROWSERS_PATH}` is outside WORKDIR so nothing later in this stage can overwrite it.
-RUN node_modules/.bin/playwright install --with-deps chromium && \
-	node_modules/.bin/playwright --version && \
-	chmod -R a+rX ${PLAYWRIGHT_BROWSERS_PATH}
+# GUARDED, because playwright's presence depends on how the image was built.
+#
+# playwright is declared by the @reactory/reactor WORKSPACE (src/modules/* in the
+# source tree, app/modules/* in the build output after bin/build.sh rewrites the
+# glob). It is not a dependency of the root project. Two build shapes exist:
+#
+#   with modules      bin/install.sh fetches src/modules, bin/build.sh copies them
+#                     to app/modules, `yarn workspaces focus` installs the workspace
+#                     dependency, and node_modules/.bin/playwright exists. This is
+#                     the production image and the one that needs a browser.
+#
+#   core-only         CI's build-smoke-test.yml deliberately builds WITHOUT the
+#                     module repos (they are separate private repos and the
+#                     lockfile cannot match). No app/modules, no playwright, so
+#                     there is no CLI to run and nothing that could launch a
+#                     browser. `node_modules/.bin/playwright: not found` at this
+#                     step is what that produced.
+#
+# The distinction matters: a core-only build has nothing to provision and must not
+# fail, but a MODULE-BEARING build whose playwright install silently went missing
+# is exactly the bug this whole change exists to prevent. So the second case fails
+# the build loudly rather than passing as unprovisioned.
+RUN if [ ! -d app/modules ] || [ -z "$(ls -A app/modules 2>/dev/null)" ]; then \
+		echo "core-only image: no workspaces under app/modules, so playwright is not installed"; \
+		echo "skipping browser provisioning - this image cannot run a browser macro anyway"; \
+	elif [ ! -x node_modules/.bin/playwright ]; then \
+		echo "FAIL: app/modules is populated but node_modules/.bin/playwright is missing"; \
+		echo "the reactor workspace declares playwright, so the workspace install is broken"; \
+		exit 1; \
+	else \
+		node_modules/.bin/playwright install --with-deps chromium && \
+		node_modules/.bin/playwright --version && \
+		chmod -R a+rX ${PLAYWRIGHT_BROWSERS_PATH}; \
+	fi
 
 # Launch gate: fails the BUILD — not the first browser macro — when the provisioned browser is
 # missing or does not match the installed package. Byte-identical to the module repo's
 # scripts/verify/playwright-browser-smoke.js; baked into the image so an operator can re-run it:
 #   podman run --rm <image> node /usr/local/bin/reactory-playwright-smoke.js
 COPY bin/verify/playwright-browser-smoke.js /usr/local/bin/reactory-playwright-smoke.js
-RUN node /usr/local/bin/reactory-playwright-smoke.js
+# The gate can only run where playwright exists (see the guard above). In a
+# core-only image it is baked in for an operator but not executed, because there
+# is nothing to launch. It says so rather than passing silently.
+RUN if [ -x node_modules/.bin/playwright ]; then \
+		node /usr/local/bin/reactory-playwright-smoke.js; \
+	else \
+		echo "launch gate SKIPPED (not passed): playwright is not installed in this core-only image"; \
+	fi

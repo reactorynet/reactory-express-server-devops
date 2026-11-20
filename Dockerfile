@@ -129,31 +129,34 @@ RUN corepack enable && \
 # `${PLAYWRIGHT_BROWSERS_PATH}` is outside WORKDIR so nothing later in this stage can overwrite it.
 # GUARDED, because playwright's presence depends on how the image was built.
 #
-# playwright is declared by the @reactory/reactor WORKSPACE (src/modules/* in the
-# source tree, app/modules/* in the build output after bin/build.sh rewrites the
-# glob). It is not a dependency of the root project. Two build shapes exist:
+# playwright is declared by the @reactory/reactor WORKSPACE, which only exists when
+# bin/install.sh has fetched src/modules and bin/build.sh has copied them to
+# app/modules. It is NOT a dependency of the root project. Two build shapes exist:
 #
-#   with modules      bin/install.sh fetches src/modules, bin/build.sh copies them
-#                     to app/modules, `yarn workspaces focus` installs the workspace
-#                     dependency, and node_modules/.bin/playwright exists. This is
-#                     the production image and the one that needs a browser.
+#   with modules   the reactor workspace is present, `yarn workspaces focus`
+#                  installs its dependency, node_modules/.bin/playwright exists.
+#                  This is the production image and the only one that can launch a
+#                  browser.
 #
-#   core-only         CI's build-smoke-test.yml deliberately builds WITHOUT the
-#                     module repos (they are separate private repos and the
-#                     lockfile cannot match). No app/modules, no playwright, so
-#                     there is no CLI to run and nothing that could launch a
-#                     browser. `node_modules/.bin/playwright: not found` at this
-#                     step is what that produced.
+#   core-only      CI's build-smoke-test.yml deliberately builds without the module
+#                  repos. app/modules still EXISTS - babel compiles
+#                  src/modules/index.ts there - but it holds no workspace: no
+#                  directory under it has a package.json. So there is no CLI and
+#                  nothing that could launch a browser.
+#
+# The test is therefore for the REACTOR WORKSPACE, not for a non-empty app/modules.
+# The first version of this guard asked "is app/modules non-empty", which is true in
+# a core-only build because of the compiled index.js, and so it took the failure
+# branch on a build that had nothing to provision.
 #
 # The distinction matters: a core-only build has nothing to provision and must not
-# fail, but a MODULE-BEARING build whose playwright install silently went missing
-# is exactly the bug this whole change exists to prevent. So the second case fails
-# the build loudly rather than passing as unprovisioned.
-RUN if [ ! -d app/modules ] || [ -z "$(ls -A app/modules 2>/dev/null)" ]; then \
-		echo "core-only image: no workspaces under app/modules, so playwright is not installed"; \
+# fail, but a MODULE-BEARING build whose playwright install silently went missing is
+# exactly the bug this whole change exists to prevent. So that case fails loudly.
+RUN if [ ! -f app/modules/reactory-reactor/package.json ]; then \
+		echo "core-only image: no reactory module workspace, so playwright is not installed"; \
 		echo "skipping browser provisioning - this image cannot run a browser macro anyway"; \
 	elif [ ! -x node_modules/.bin/playwright ]; then \
-		echo "FAIL: app/modules is populated but node_modules/.bin/playwright is missing"; \
+		echo "FAIL: app/modules/reactory-reactor is present but node_modules/.bin/playwright is missing"; \
 		echo "the reactor workspace declares playwright, so the workspace install is broken"; \
 		exit 1; \
 	else \

@@ -1,14 +1,16 @@
-# NODE_VERSION and BUN_VERSION must be declared before FROM so they can be used in FROM instructions.
-# The default matches .nvmrc — override by passing --build-arg NODE_VERSION=<version>.
-ARG NODE_VERSION=20.19.4
-ARG BUN_VERSION=1.4.2
+# Args used in FROM must be declared before the first FROM.
+# NODE_VERSION defaults to the server's .nvmrc; bin/build-image.sh passes the real value.
+ARG NODE_VERSION=24.22.3
+# Base image is a build arg so each environment can use its own approved registry.
+# Override with `--build-arg NODE_BASE_IMAGE=<image>`. It must be a full Debian Node
+# image: the system packages below are installed with apt-get.
+ARG NODE_BASE_IMAGE=docker.io/library/node:${NODE_VERSION}
 
-FROM oven/bun:${BUN_VERSION} AS bun-image
-FROM node:${NODE_VERSION}
+FROM ${NODE_BASE_IMAGE}
 
-# Install Bun runtime (default version 1.4.2)
-COPY --from=bun-image /usr/local/bin/bun /usr/local/bin/bun
-RUN ln -s /usr/local/bin/bun /usr/local/bin/bunx && bun --version
+# Some hardened base images end on a non-root user. Every step below installs
+# system packages or writes outside a home directory, so switch to root explicitly.
+USER root
 
 ARG REACTORY_CONFIG_ID
 ARG REACTORY_ENV_ID
@@ -83,6 +85,11 @@ RUN apt-get update -y && \
 	libvips-dev && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
+
+# Install the Bun runtime from npm. The bun package ships per-platform binaries as
+# optional dependencies, so no separate Bun base image has to be pulled. It runs after
+# the certificate step so a registry behind a custom CA is trusted.
+RUN npm install -g bun@${BUN_VERSION} && bun --version && bunx --version
 
 WORKDIR /
 
